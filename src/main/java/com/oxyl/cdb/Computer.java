@@ -7,27 +7,6 @@ public class Computer {
 	private Date discontinuedDate;
 	private String manufacturer;
 	
-	public Computer(String computerName) {
-		this.computerName = computerName;
-		this.introductionDate = null;
-		this.discontinuedDate  = null;
-		this.manufacturer = null;
-	}
-	
-	public Computer(String computerName, Date introductionDate) {
-		this.computerName = computerName;
-		this.introductionDate = introductionDate;
-		this.discontinuedDate  = null;
-		this.manufacturer = null;
-	}
-	
-	public Computer(String computerName, Date introductionDate, String manufacturer) {
-		this.computerName = computerName;
-		this.introductionDate = introductionDate;
-		this.discontinuedDate  = null;
-		this.manufacturer = manufacturer;
-	}
-	
 	public Computer(String computerName, Date introductionDate, Date discontinuedDate, String manufacturer) {
 		this.computerName = computerName;
 		this.introductionDate = introductionDate;
