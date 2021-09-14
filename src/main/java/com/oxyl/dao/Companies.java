@@ -1,22 +1,34 @@
-package com.oxyl.cdb;
+package com.oxyl.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
+import com.oxyl.model.Company;
+import com.oxyl.model.Computer;
 import com.oxyl.persistence.DatabaseConnection;
 
 public class Companies {
+	/**
+	 * This is the class that contains all companies. It follows Singleton pattern.
+	 */
 	private static Companies instance;
-	public ArrayList<Company> companyList;
-	static final String QUERY = "select * from company";
+	public LinkedList<Company> companyList;
+	private DatabaseConnection db;
+	static final String QUERY_ALL = "select * from company";
+	static final String QUERY_GET = "select * from company where id=";
+	
 	
 	private Companies(DatabaseConnection db) {
+		/**
+		 * @param DatabaseConnection
+		 */
 		try {
-			Statement test = db.connection.createStatement();
-			ResultSet rs = test.executeQuery(QUERY);
-			ArrayList<Company> companyList = new ArrayList<Company>(); 
+			this.db = db;
+			Statement statement = db.connection.createStatement();
+			ResultSet rs = statement.executeQuery(QUERY_ALL);
+			LinkedList<Company> companyList = new LinkedList<Company>(); 
 			while(rs.next()) {
 				companyList.add(new Company(rs.getInt(1),rs.getString(2)));
 			}
@@ -28,9 +40,33 @@ public class Companies {
 	
 	
 	public static Companies getInstance(DatabaseConnection db) {
+		/**
+		 * @param DatabaseConnection
+		 * @return Companies
+		 */
 		if (instance == null) {
 			instance = new Companies(db);
 		}
 		return instance;
 	}
+	
+	public Company getCompany(int id) {
+		try {
+	        Statement statement = db.connection.createStatement();
+	        ResultSet rs = statement.executeQuery(QUERY_GET + id);
+	        if(rs.next()) {
+	            return extractCompany(rs);
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return null; 
+	}
+	
+	private Company extractCompany(ResultSet rs) throws SQLException {
+		return new Company(rs.getInt(1),rs.getString(2));
+	}
+	
 }
