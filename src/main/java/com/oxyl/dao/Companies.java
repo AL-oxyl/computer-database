@@ -1,12 +1,12 @@
 package com.oxyl.dao;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 
 import com.oxyl.model.Company;
-import com.oxyl.model.Computer;
 import com.oxyl.persistence.DatabaseConnection;
 
 public class Companies {
@@ -17,7 +17,9 @@ public class Companies {
 	public LinkedList<Company> companyList;
 	private DatabaseConnection db;
 	static final String QUERY_ALL = "select * from company";
-	static final String QUERY_GET = "select * from company where id=";
+	static final String QUERY_GET_BY_ID = "select * from company where id=";
+	static final String QUERY_GET_BY_NAME = "select * from company where name=?";
+
 	
 	
 	private Companies(DatabaseConnection db) {
@@ -53,7 +55,23 @@ public class Companies {
 	public Company getCompany(int id) {
 		try {
 	        Statement statement = db.connection.createStatement();
-	        ResultSet rs = statement.executeQuery(QUERY_GET + id);
+	        ResultSet rs = statement.executeQuery(QUERY_GET_BY_ID + id);
+	        if(rs.next()) {
+	            return extractCompany(rs);
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return null; 
+	}
+	
+	public Company getCompany(String name) {
+		try {
+	        PreparedStatement ps = db.connection.prepareStatement(QUERY_GET_BY_NAME);
+	        ps.setString(1,name);
+	        ResultSet rs = ps.executeQuery();
 	        if(rs.next()) {
 	            return extractCompany(rs);
 	        }
