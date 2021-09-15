@@ -6,24 +6,29 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.persistence.DatabaseConnection;
 
 public class Computers implements ComputerDao {
-	static final String QUERY_SELECT = "select * from computer";
-	static final String QUERY_GET = "select * from computer where id=";
-	static final String QUERY_INSERT = "insert INTO computer VALUES (NULL, ?, ?, ?, ?)";
-	static final String QUERY_UPDATE = "update computer SET name=?, introduced=?, discontinued=?, company_id=? where id=?";
-	static final String QUERY_DELETE = "delete from computer where id=";
+	public static final short NUMBER_RESULT_BY_PAGE = 30;
+	private static final String QUERY_SELECT = "select * from computer";
+	private static final String QUERY_GET = "select * from computer where id=";
+	private static final String QUERY_INSERT = "insert INTO computer VALUES (NULL, ?, ?, ?, ?)";
+	private static final String QUERY_UPDATE = "update computer SET name=?, introduced=?, discontinued=?, company_id=? where id=?";
+	private static final String QUERY_DELETE = "delete from computer where id=";
+	private static final String QUERY_GET_RANGE = "select * from computer limit ?,"+Short.toString(NUMBER_RESULT_BY_PAGE);
+	private static final String QUERY_COUNT = "select count(id) from computer";
+	
 	private DatabaseConnection db;
 	private Companies instance;
 	
 	
-	public Computers(DatabaseConnection db) {
-		this.db = db;
-		this.instance = Companies.getInstance(db);
+	public Computers() {
+		this.db = DatabaseConnection.getInstance();
+		this.instance = Companies.getInstance();
 	}
 	
 	public Computer getComputer(int id) {
@@ -60,13 +65,31 @@ public class Computers implements ComputerDao {
 		return companyList;
 	}
 	
+	public ArrayList<Computer> getComputerRange(int pageNumber) {
+		try {
+			ArrayList<Computer> computerRange = new ArrayList<Computer>();
+	        PreparedStatement ps = db.connection.prepareStatement(QUERY_GET_RANGE);
+	        ps.setInt(1,pageNumber*NUMBER_RESULT_BY_PAGE);
+	        ResultSet rs = ps.executeQuery();
+	        while(rs.next()) {
+	        	computerRange.add(extractComputer(rs));
+	        }
+	        return computerRange;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public boolean insertComputer(Computer computer) {
 		try {
 			PreparedStatement ps = db.connection.prepareStatement(QUERY_INSERT);
 	        ps.setString(1, computer.getComputerName());
 	        ps.setDate(2, computer.getIntroductionDate());
 	        ps.setDate(3, computer.getDiscontinuedDate());
-	        ps.setInt(4, computer.getManufacturer().getId());
+	        if(computer.getManufacturer()!= null) {
+	        	ps.setInt(4, computer.getManufacturer().getId());
+	        }
 	        int i = ps.executeUpdate();
 
 	      if(i == 1) {
@@ -120,4 +143,19 @@ public class Computers implements ComputerDao {
 
 	    return false; 
 	}
+	
+	public int getComputerCount() {
+		try {
+			PreparedStatement ps = db.connection.prepareStatement(QUERY_COUNT);
+			ResultSet rs = ps.executeQuery();
+	        if(rs.next()) {
+	        	return rs.getInt(1);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return 0; 
+	}
 }
+

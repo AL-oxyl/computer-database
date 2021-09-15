@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
+import java.util.stream.Stream;
 
 import com.oxyl.model.Company;
 import com.oxyl.persistence.DatabaseConnection;
@@ -22,12 +23,12 @@ public class Companies {
 
 	
 	
-	private Companies(DatabaseConnection db) {
+	private Companies() {
 		/**
 		 * @param DatabaseConnection
 		 */
 		try {
-			this.db = db;
+			this.db = DatabaseConnection.getInstance();
 			Statement statement = db.connection.createStatement();
 			ResultSet rs = statement.executeQuery(QUERY_ALL);
 			LinkedList<Company> companyList = new LinkedList<Company>(); 
@@ -41,13 +42,13 @@ public class Companies {
 	}
 	
 	
-	public static Companies getInstance(DatabaseConnection db) {
+	public static Companies getInstance() {
 		/**
 		 * @param DatabaseConnection
 		 * @return Companies
 		 */
 		if (instance == null) {
-			instance = new Companies(db);
+			instance = new Companies();
 		}
 		return instance;
 	}
@@ -79,12 +80,15 @@ public class Companies {
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
-
 	    return null; 
 	}
 	
 	private Company extractCompany(ResultSet rs) throws SQLException {
 		return new Company(rs.getInt(1),rs.getString(2));
+	}
+	
+	public Stream<Company> getStreamCompany() {
+		return companyList.stream();
 	}
 	
 }

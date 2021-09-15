@@ -11,7 +11,7 @@ public class Menu {
 		menu.append(newLine);
 		menu.append("1- Pour afficher tout les ordinateurs disponibles ");
 		menu.append(newLine);
-		menu.append("2- Pour afficher tout les ordinateurs disponibles ");
+		menu.append("2- Pour afficher toutes les entreprises disponibles ");
 		menu.append(newLine);
 		menu.append("3- Pour afficher les détails d'un ordinateur");
 		menu.append(newLine);
@@ -19,7 +19,7 @@ public class Menu {
 		menu.append(newLine);
 		menu.append("5- Pour mettre a jour un ordinateur");
 		menu.append(newLine);
-		menu.append("6- Pour mettre a jour un ordinateur");
+		menu.append("6- Pour supprimer un ordinateur");
 		menu.append(newLine);
 		menu.append("Toute erreur de saisie réaffichera ce menu...");
 		menu.append(newLine);
