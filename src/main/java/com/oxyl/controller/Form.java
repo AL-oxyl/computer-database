@@ -51,6 +51,7 @@ public class Form {
 		while(continueMenu) {
 			Menu.showBootingMenu();
 			getSecureMenuInput();
+			boolean validId;
 			switch(firstMenuEntry) {
 			case 1:
 				initComputerPage();
@@ -73,7 +74,7 @@ public class Form {
 				this.secondMenuEntry = 0;
 				break;
 			case 3:
-				boolean validId = false;
+				validId = false;
 				while(!validId) {
 					System.out.print("Entrez l'id de l'ordinateur souhaité : ");
 					Computer computer = getSecureComputerInfoInput();
@@ -92,6 +93,19 @@ public class Form {
 			case 5:
 				break;
 			case 6:
+				validId = false;
+				while(!validId) {
+					System.out.print("Entrez l'id de l'ordinateur souhaité : ");
+					Computer computer = getSecureComputerInfoInput();
+					if (computer!=null) {
+						Computers computers = new Computers();
+						computers.deleteComputer(computer.getId());
+						validId = true;
+						System.out.println("L'ordinateur " + computer.getId() + " a bien été supprimé.\n"); 
+					} else {
+						System.out.println("ID non valide. Merci de mettre une ID valide");
+					}
+				}
 				break;
 			case 7:
 				this.continueMenu = false;
