@@ -34,9 +34,9 @@ public class Form {
 	}
 	
 	public void menu() {
-		Menu.showBootingMenu();
-		getSecureMenuInput();
 		while(continueMenu) {
+			Menu.showBootingMenu();
+			getSecureMenuInput();
 			switch(firstMenuEntry) {
 			case 1:
 				initComputerPage();
@@ -46,8 +46,6 @@ public class Form {
 					computerPageHandler.handlePage(secondMenuEntry);
 					page.showPage();
 				}
-				this.secondMenuEntry = 0;
-				this.firstMenuEntry = 0;
 				break;
 			case 2:
 				
