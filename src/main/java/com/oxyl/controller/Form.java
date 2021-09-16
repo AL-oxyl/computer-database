@@ -74,13 +74,16 @@ public class Form {
 				break;
 			case 3:
 				boolean validId = false;
-				System.out.println();
 				while(!validId) {
 					System.out.print("Entrez l'id de l'ordinateur souhaité : ");
 					Computer computer = getSecureComputerInfoInput();
+					if (computer!=null) {
 					ComputerInfo computerInfo = new ComputerInfo(computer);
 					computerInfo.show();
 					validId = true;
+					} else {
+						System.out.println("ID non valide. Merci de mettre une ID valide");
+					}
 				}
 				System.out.println();
 				break;
