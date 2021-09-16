@@ -30,18 +30,12 @@ public class Computers implements ComputerDao {
 		this.instance = Companies.getInstance();
 	}
 	
-	public Computer getComputer(int id) {
-		try {
-	        Statement statement = db.connection.createStatement();
-	        ResultSet rs = statement.executeQuery(QUERY_GET + id);
-	        if(rs.next()) {
-	            return extractComputer(rs);
-	        }
-
-	    } catch (SQLException e) {
-	        e.printStackTrace();
+	public Computer getComputer(int id) throws SQLException {
+	    Statement statement = db.connection.createStatement();
+	    ResultSet rs = statement.executeQuery(QUERY_GET + id);
+	    if(rs.next()) {
+	         return extractComputer(rs);
 	    }
-
 	    return null; 
 	}
 	

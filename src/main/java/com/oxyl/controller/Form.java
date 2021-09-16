@@ -1,11 +1,14 @@
 package com.oxyl.controller;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Scanner;
 
 import com.oxyl.dao.Companies;
 import com.oxyl.dao.Computers;
+import com.oxyl.model.Computer;
+import com.oxyl.ui.ComputerInfo;
 import com.oxyl.ui.Menu;
 import com.oxyl.ui.PageCompany;
 import com.oxyl.ui.PageComputer;
@@ -70,13 +73,23 @@ public class Form {
 				this.secondMenuEntry = 0;
 				break;
 			case 3:
-				
+				boolean validId = false;
+				System.out.println();
+				while(!validId) {
+					System.out.print("Entrez l'id de l'ordinateur souhaité : ");
+					Computer computer = getSecureComputerInfoInput();
+					ComputerInfo computerInfo = new ComputerInfo(computer);
+					computerInfo.show();
+					validId = true;
+				}
+				System.out.println();
+				break;
 			case 4:
-				
+				break;
 			case 5:
-				
+				break;
 			case 6:
-				
+				break;
 			case 7:
 				this.continueMenu = false;
 				this.scan.close();
@@ -104,7 +117,7 @@ public class Form {
 		System.out.println("Entrée valide");
 	}
 	
-	public void getSecureComputerPaginationInput() {
+	private void getSecureComputerPaginationInput() {
 		boolean validEntry = false;
 		while(!validEntry) {
 			if (scan.hasNextInt()) {
@@ -125,7 +138,7 @@ public class Form {
 		System.out.println("Entrée valide");
 	} 
 	
-	public void getSecureCompaniesPaginationInput() {
+	private void getSecureCompaniesPaginationInput() {
 		boolean validEntry = false;
 		while(!validEntry) {
 			if (scan.hasNextInt()) {
@@ -146,5 +159,25 @@ public class Form {
 		System.out.println("Entrée valide");
 	} 
 	
-	
+	private Computer getSecureComputerInfoInput() {
+		boolean validEntry = false;
+		int value;
+		while(!validEntry) {
+			if (scan.hasNextInt()) {
+				value = scan.nextInt();
+				try {
+					Computers computers = new Computers();
+					Computer computer = computers.getComputer(value);	
+					return computer;
+				} catch (SQLException e){
+					System.out.println("ID non valide, merci de réessayer");
+				}	
+			} else {
+				System.out.println("\nCeci n'est pas un entier, merci de rentrer un entier\n");
+			}
+			scan.nextLine();
+			System.out.print("Entrez l'id de l'ordinateur souhaité :");
+		}
+		return null;
+	}
 }
