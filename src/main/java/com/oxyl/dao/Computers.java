@@ -6,14 +6,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.persistence.DatabaseConnection;
 
 public class Computers implements ComputerDao {
-	public static final short NUMBER_RESULT_BY_PAGE = 30;
+	public static final short NUMBER_RESULT_BY_PAGE = 10;
 	private static final String QUERY_SELECT = "select * from computer";
 	private static final String QUERY_GET = "select * from computer where id=";
 	private static final String QUERY_INSERT = "insert INTO computer VALUES (NULL, ?, ?, ?, ?)";

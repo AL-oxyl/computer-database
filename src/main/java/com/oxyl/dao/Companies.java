@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import com.oxyl.model.Company;
@@ -15,7 +15,7 @@ public class Companies {
 	 * This is the class that contains all companies. It follows Singleton pattern.
 	 */
 	private static Companies instance;
-	public LinkedList<Company> companyList;
+	public ArrayList<Company> companyList;
 	private DatabaseConnection db;
 	static final String QUERY_ALL = "select * from company";
 	static final String QUERY_GET_BY_ID = "select * from company where id=";
@@ -31,7 +31,7 @@ public class Companies {
 			this.db = DatabaseConnection.getInstance();
 			Statement statement = db.connection.createStatement();
 			ResultSet rs = statement.executeQuery(QUERY_ALL);
-			LinkedList<Company> companyList = new LinkedList<Company>(); 
+			ArrayList<Company> companyList = new ArrayList<Company>(); 
 			while(rs.next()) {
 				companyList.add(new Company(rs.getInt(1),rs.getString(2)));
 			}

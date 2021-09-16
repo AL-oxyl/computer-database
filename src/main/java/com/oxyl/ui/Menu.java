@@ -21,8 +21,9 @@ public class Menu {
 		menu.append(newLine);
 		menu.append("6- Pour supprimer un ordinateur");
 		menu.append(newLine);
-		menu.append("Toute erreur de saisie réaffichera ce menu...");
+		menu.append("7- Pour quitter");
 		menu.append(newLine);
+		menu.append("Toute erreur de saisie réaffichera ce menu...");
 		System.out.println(menu);
 	}
 	
