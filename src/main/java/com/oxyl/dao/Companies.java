@@ -5,8 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.stream.Stream;
-
 import com.oxyl.model.Company;
 import com.oxyl.persistence.DatabaseConnection;
 
@@ -17,10 +15,12 @@ public class Companies {
 	private static Companies instance;
 	public ArrayList<Company> companyList;
 	private DatabaseConnection db;
+	public static final short NUMBER_RESULT_BY_PAGE = 10;
 	static final String QUERY_ALL = "select * from company";
 	static final String QUERY_GET_BY_ID = "select * from company where id=";
 	static final String QUERY_GET_BY_NAME = "select * from company where name=?";
-
+	private static final String QUERY_GET_RANGE = "select * from company limit ?,"+Short.toString(NUMBER_RESULT_BY_PAGE);
+	private static final String QUERY_COUNT = "select count(id) from company";
 	
 	
 	private Companies() {
@@ -87,8 +87,32 @@ public class Companies {
 		return new Company(rs.getInt(1),rs.getString(2));
 	}
 	
-	public Stream<Company> getStreamCompany() {
-		return companyList.stream();
+	public ArrayList<Company> getCompanyRange(int pageNumber) {
+		try {
+			ArrayList<Company> companyRange = new ArrayList<Company>();
+	        PreparedStatement ps = db.connection.prepareStatement(QUERY_GET_RANGE);
+	        ps.setInt(1,pageNumber*NUMBER_RESULT_BY_PAGE);
+	        ResultSet rs = ps.executeQuery();
+	        while(rs.next()) {
+	        	companyRange.add(extractCompany(rs));
+	        }
+	        return companyRange;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
+	public int getCompanyCount() {
+		try {
+			PreparedStatement ps = db.connection.prepareStatement(QUERY_COUNT);
+			ResultSet rs = ps.executeQuery();
+	        if(rs.next()) {
+	        	return rs.getInt(1);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return 0; 
+	}
 }

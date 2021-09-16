@@ -24,6 +24,6 @@ public class Company {
 	}
 	@Override
 	public String toString() {
-		return name;
+		return "id : " + id + "\tname : " + name;
 	}
 }
