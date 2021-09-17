@@ -6,12 +6,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.persistence.DatabaseConnection;
 
-public class Computers implements ComputerDao {
+public class ComputerDAO implements ComputerDao {
 	public static final short NUMBER_RESULT_BY_PAGE = 10;
 	private static final String QUERY_SELECT = "select * from computer";
 	private static final String QUERY_GET = "select * from computer where id=";
@@ -22,12 +23,12 @@ public class Computers implements ComputerDao {
 	private static final String QUERY_COUNT = "select count(id) from computer";
 	
 	private DatabaseConnection db;
-	private Companies instance;
+	private CompanyDAO instance;
 	
 	
-	public Computers() {
+	public ComputerDAO() {
 		this.db = DatabaseConnection.getInstance();
-		this.instance = Companies.getInstance();
+		this.instance = CompanyDAO.getInstance();
 	}
 	
 	public Computer getComputer(int id) throws SQLException {
@@ -40,7 +41,7 @@ public class Computers implements ComputerDao {
 	}
 	
 	private Computer extractComputer(ResultSet rs) throws SQLException {
-		Company company = instance.getCompany(rs.getInt(5));
+		Optional<Company> company = instance.getCompany(rs.getInt(5));
 		return new Computer.ComputerBuilder(rs.getString(2)).id(rs.getInt(1)).introductionDate(rs.getDate(3)).discontinuedDate(rs.getDate(4)).manufacturer(company).build();
 	}
 	
@@ -80,9 +81,7 @@ public class Computers implements ComputerDao {
 	        ps.setString(1, computer.getComputerName());
 	        ps.setDate(2, computer.getIntroductionDate());
 	        ps.setDate(3, computer.getDiscontinuedDate());
-	        if(computer.getManufacturer()!= null) {
-	        	ps.setInt(4, computer.getManufacturer().getId());
-	        }
+	        ps.setInt(4, computer.getManufacturer().map(Company::getId).orElse(null));
 	        int i = ps.executeUpdate();
 
 	      if(i == 1) {
@@ -106,7 +105,7 @@ public class Computers implements ComputerDao {
 	        ps.setDate(2, computer.getIntroductionDate());
 	        ps.setDate(3, computer.getDiscontinuedDate());
 	        if(computer.getManufacturer()!= null) {
-	        	ps.setInt(4, computer.getManufacturer().getId());
+	        	ps.setInt(4, computer.getManufacturer().map(Company::getId).orElse(null));
 	        }
 	        ps.setInt(5, computer.getId());
 	        int i = ps.executeUpdate();

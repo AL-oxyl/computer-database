@@ -5,14 +5,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Optional;
+
 import com.oxyl.model.Company;
 import com.oxyl.persistence.DatabaseConnection;
 
-public class Companies {
+public class CompanyDAO {
 	/**
 	 * This is the class that contains all companies. It follows Singleton pattern.
 	 */
-	private static Companies instance;
+	private static CompanyDAO instance;
 	public ArrayList<Company> companyList;
 	private DatabaseConnection db;
 	public static final short NUMBER_RESULT_BY_PAGE = 10;
@@ -23,7 +25,7 @@ public class Companies {
 	private static final String QUERY_COUNT = "select count(id) from company";
 	
 	
-	private Companies() {
+	private CompanyDAO() {
 		/**
 		 * @param DatabaseConnection
 		 */
@@ -42,30 +44,29 @@ public class Companies {
 	}
 	
 	
-	public static Companies getInstance() {
+	public static CompanyDAO getInstance() {
 		/**
 		 * @param DatabaseConnection
 		 * @return Companies
 		 */
 		if (instance == null) {
-			instance = new Companies();
+			instance = new CompanyDAO();
 		}
 		return instance;
 	}
 	
-	public Company getCompany(int id) {
+	public Optional<Company> getCompany(int id) {
 		try {
 	        Statement statement = db.connection.createStatement();
 	        ResultSet rs = statement.executeQuery(QUERY_GET_BY_ID + id);
 	        if(rs.next()) {
-	            return extractCompany(rs);
+	            return Optional.of(extractCompany(rs));
 	        }
 
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
-
-	    return null; 
+		return Optional.empty();
 	}
 	
 	public Company getCompany(String name) {
@@ -88,19 +89,18 @@ public class Companies {
 	}
 	
 	public ArrayList<Company> getCompanyRange(int pageNumber) {
+		ArrayList<Company> companyRange = new ArrayList<Company>();
 		try {
-			ArrayList<Company> companyRange = new ArrayList<Company>();
 	        PreparedStatement ps = db.connection.prepareStatement(QUERY_GET_RANGE);
 	        ps.setInt(1,pageNumber*NUMBER_RESULT_BY_PAGE);
 	        ResultSet rs = ps.executeQuery();
 	        while(rs.next()) {
 	        	companyRange.add(extractCompany(rs));
 	        }
-	        return companyRange;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return companyRange;
 	}
 	
 	public int getCompanyCount() {

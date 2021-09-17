@@ -1,12 +1,13 @@
 package com.oxyl.model;
 import java.sql.Date;
+import java.util.Optional;
 
 public class Computer {
 	private final Integer id;
 	private final String computerName;
 	private final Date introductionDate;
 	private final Date discontinuedDate;
-	private final Company manufacturer;
+	private final Optional<Company> manufacturer;
 	
 	public Computer(ComputerBuilder builder) {
 		this.computerName = builder.computerName;
@@ -29,7 +30,7 @@ public class Computer {
 		return discontinuedDate;
 	}
 
-	public Company getManufacturer() {
+	public Optional<Company> getManufacturer() {
 		return manufacturer;
 	}
 
@@ -49,7 +50,7 @@ public class Computer {
 		private Integer id;
 		private Date introductionDate;
 		private Date discontinuedDate;
-		private Company manufacturer;
+		private Optional<Company> manufacturer;
 		
 		public ComputerBuilder(String name) {
 			this.computerName = name;
@@ -70,7 +71,7 @@ public class Computer {
 			return this;
 		}
 		
-		public ComputerBuilder manufacturer(Company company) {
+		public ComputerBuilder manufacturer(Optional<Company> company) {
 			this.manufacturer = company;
 			return this;
 		}

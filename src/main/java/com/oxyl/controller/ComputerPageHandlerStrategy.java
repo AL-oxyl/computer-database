@@ -1,36 +1,20 @@
 package com.oxyl.controller;
 
 import java.util.ArrayList;
-import com.oxyl.dao.Computers;
+import com.oxyl.dao.ComputerDAO;
 import com.oxyl.model.Computer;
+import com.oxyl.ui.Pagination;
 
-public class ComputerPageHandler {
+public class ComputerPageHandlerStrategy implements GenericPageHandler<Computer>{
 	
-	private static ComputerPageHandler instance;
 	private ArrayList<Computer> computerPageList;
 	private int pageIndex;
 	private int numberPage;
 	
-	private ComputerPageHandler(ArrayList<Computer> computerPageList, int numberPage) {
-		this.setComputerPageList(computerPageList);
+	public ComputerPageHandlerStrategy(ArrayList<Computer> computerPageList, int numberComputer) {
+		this.setPageList(computerPageList);
 		this.pageIndex = 0;
-		this.numberPage = numberPage/Computers.NUMBER_RESULT_BY_PAGE;
- 	}
-	
-	
-	public static ComputerPageHandler getInstance(ArrayList<Computer> in, int numberPage) {
-		if (instance == null) {
-			instance = new ComputerPageHandler(in,numberPage);
-		}
-		return instance;
-	}
-	
-	public static ComputerPageHandler getInstance() {
-		if (instance == null) {
-			System.out.println("There is no instance");
-			System.out.println("Please use getInstance(ArrayList<Computer> in, int numberPage)");
-		}
-		return instance;		
+		this.numberPage = (numberComputer/ComputerDAO.NUMBER_RESULT_BY_PAGE)+1;
 	}
 
 	public int getPageIndex() {
@@ -43,7 +27,7 @@ public class ComputerPageHandler {
 	}
 
 
-	public void setComputerPageList(ArrayList<Computer> computerPageList) {
+	public void setPageList(ArrayList<Computer> computerPageList) {
 		this.computerPageList = computerPageList;
 	}
 
@@ -57,8 +41,8 @@ public class ComputerPageHandler {
 		
 	}
 	
-	private void updateInfo(int entry) {
-		Computers computers = new Computers();
+	public void updateInfo(int entry) {
+		ComputerDAO computers = new ComputerDAO();
 		switch (entry) {
 			case 1:
 				pageIndex--;
@@ -83,6 +67,20 @@ public class ComputerPageHandler {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public ArrayList<Computer> getPageList() {
+		return computerPageList;
+	}
+	
+	public Pagination getPageState() {
+		if (testLeft()) {
+			return Pagination.LEFT;
+		} else if (testRight()){
+			return Pagination.RIGHT;
+		}
+		return Pagination.MIDDLE;
 	}
 }
 
