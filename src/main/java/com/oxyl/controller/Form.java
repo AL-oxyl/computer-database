@@ -46,80 +46,116 @@ public class Form {
 		pageCompany.showPage();
 	}
 	
+	private void showComputerList() {
+		initComputerPage();
+		while(secondMenuEntry != 3) {
+			PageComputer.controllerMessage(computerPageHandler.getPageState());
+			getSecureComputerPaginationInput();
+			computerPageHandler.handlePage(secondMenuEntry);
+			pageComputer.setCurrentComputerListOnPage(computerPageHandler.getPageList());
+			pageComputer.showPage();
+		}
+		this.secondMenuEntry = 0;
+	}
+	
+	private void showCompanyList() {
+		initCompanyPage();
+		while(secondMenuEntry != 3) {
+			PageCompany.controllerMessage(companyPageHandler.getPageState());
+			getSecureCompaniesPaginationInput();
+			companyPageHandler.handlePage(secondMenuEntry);
+			pageCompany.setCurrentCompanyListOnPage(companyPageHandler.getPageList());
+			pageCompany.showPage();
+		}
+		this.secondMenuEntry = 0;
+	}
+	
+	private void showComputerInfo() {
+		boolean validId = false;
+		while(!validId) {
+			System.out.print("Entrez l'id de l'ordinateur souhaité : ");
+			Computer computer = getSecureComputerInfoInput();
+			if (computer!=null) {
+				ComputerInfo computerInfo = new ComputerInfo(computer);
+				computerInfo.show();
+				validId = true;
+			} else {
+				System.out.println("ID non valide. Merci de mettre une ID valide");
+			}
+		}
+		System.out.println();
+	}
+	
+	private void addNewComputerInfo() {
+		boolean validId = false;
+		while(!validId) {
+			System.out.print("Bienvenue dans le menu de création d'ordinateur");
+			Computer computer = getSecureComputerInfoInput();
+			if (computer!=null) {
+				ComputerInfo computerInfo = new ComputerInfo(computer);
+				computerInfo.show();
+				validId = true;
+			} else {
+				System.out.println("ID non valide. Merci de mettre une ID valide");
+			}
+		}
+		System.out.println();
+	}
+	
+	private void updateComputerInfo() {
+		boolean validId = false;
+		while(!validId) {
+			System.out.print("Entrez l'id de l'ordinateur souhaité : ");
+			Computer computer = getSecureComputerInfoInput();
+			if (computer!=null) {
+				ComputerInfo computerInfo = new ComputerInfo(computer);
+				computerInfo.show();
+				validId = true;
+			} else {
+				System.out.println("ID non valide. Merci de mettre une ID valide");
+			}
+		}
+		System.out.println();
+	}
+	
+	private void deleteComputerInfo() {
+		boolean validId = false;
+		while(!validId) {
+			System.out.print("Entrez l'id de l'ordinateur souhaité : ");
+			Computer computer = getSecureComputerInfoInput();
+			if (computer!=null) {
+				ComputerDAO computers = new ComputerDAO();
+				computers.deleteComputer(computer.getId());
+				validId = true;
+				System.out.println("L'ordinateur " + computer.getId() + " a bien été supprimé.\n"); 
+			} else {
+				System.out.println("ID non valide. Merci de mettre une ID valide");
+			}
+		}
+	}
+	
 	public void menu() {
 		while(continueMenu) {
 			Menu.showBootingMenu();
 			getSecureMenuInput();
-			boolean validId;
 			switch(firstMenuEntry) {
 			case 1:
-				initComputerPage();
-				while(secondMenuEntry != 3) {
-					PageComputer.controllerMessage(computerPageHandler.getPageState());
-					getSecureComputerPaginationInput();
-					computerPageHandler.handlePage(secondMenuEntry);
-					pageComputer.setCurrentComputerListOnPage(computerPageHandler.getPageList());
-					pageComputer.showPage();
-				}
-				this.secondMenuEntry = 0;
+				showComputerList();
 				break;
 			case 2:
-				initCompanyPage();
-				while(secondMenuEntry != 3) {
-					PageCompany.controllerMessage(computerPageHandler.getPageState());
-					getSecureCompaniesPaginationInput();
-					companyPageHandler.handlePage(secondMenuEntry);
-					pageCompany.setCurrentCompanyListOnPage(companyPageHandler.getPageList());
-					pageCompany.showPage();
-				}
-				this.secondMenuEntry = 0;
+				showCompanyList();
 				break;
 			case 3:
-				validId = false;
-				while(!validId) {
-					System.out.print("Entrez l'id de l'ordinateur souhaité : ");
-					Computer computer = getSecureComputerInfoInput();
-					if (computer!=null) {
-						ComputerInfo computerInfo = new ComputerInfo(computer);
-						computerInfo.show();
-						validId = true;
-					} else {
-						System.out.println("ID non valide. Merci de mettre une ID valide");
-					}
-				}
-				System.out.println();
+				showComputerInfo();
 				break;
-			case 4:		
+			case 4:
+				addNewComputerInfo();
 				break;
 			case 5:
-				validId = false;
-				while(!validId) {
-					System.out.print("Entrez l'id de l'ordinateur souhaité : ");
-					Computer computer = getSecureComputerInfoInput();
-					if (computer!=null) {
-						ComputerInfo computerInfo = new ComputerInfo(computer);
-						computerInfo.show();
-						validId = true;
-					} else {
-						System.out.println("ID non valide. Merci de mettre une ID valide");
-					}
-				}
-				System.out.println();
+				updateComputerInfo();
 				break;
 			case 6:
-				validId = false;
-				while(!validId) {
-					System.out.print("Entrez l'id de l'ordinateur souhaité : ");
-					Computer computer = getSecureComputerInfoInput();
-					if (computer!=null) {
-						ComputerDAO computers = new ComputerDAO();
-						computers.deleteComputer(computer.getId());
-						validId = true;
-						System.out.println("L'ordinateur " + computer.getId() + " a bien été supprimé.\n"); 
-					} else {
-						System.out.println("ID non valide. Merci de mettre une ID valide");
-					}
-				}
+				deleteComputerInfo();
 				break;
 			case 7:
 				this.continueMenu = false;
@@ -153,9 +189,7 @@ public class Form {
 		while(!validEntry) {
 			if (scan.hasNextInt()) {
 				this.secondMenuEntry = scan.nextInt();
-				if (validSecondMenuValues.contains(secondMenuEntry) && 
-				   (secondMenuEntry != 1 || !computerPageHandler.testLeft()) &&
-				   (secondMenuEntry != 2 || !computerPageHandler.testRight())) {
+				if (!isOutOfBoundComputer()) {
 					break;
 				} else {
 					System.out.println("\nCet entier n'est pas reconnu, merci de rentrer une valeur affiché sur le menu\n");
@@ -174,11 +208,8 @@ public class Form {
 		while(!validEntry) {
 			if (scan.hasNextInt()) {
 				this.secondMenuEntry = scan.nextInt();
-				if (validSecondMenuValues.contains(secondMenuEntry) && 
-				   (secondMenuEntry != 1 || !companyPageHandler.testLeft()) &&
-				   (secondMenuEntry != 2 || !companyPageHandler.testRight())) {
+				if (!isOutOfBoundCompany()) {
 					break;
-					
 				} else {
 					System.out.println("\nCet entier n'est pas reconnu, merci de rentrer une valeur affiché sur le menu\n");
 				}
@@ -211,5 +242,23 @@ public class Form {
 			System.out.print("Entrez l'id de l'ordinateur souhaité :");
 		}
 		return null;
+	}
+	
+	private boolean isOutOfBoundCompany() {
+		if (validSecondMenuValues.contains(secondMenuEntry) && 
+		   (secondMenuEntry != 1 || !companyPageHandler.testLeft()) &&
+		   (secondMenuEntry != 2 || !companyPageHandler.testRight())) {
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean isOutOfBoundComputer() {
+		if (validSecondMenuValues.contains(secondMenuEntry) && 
+		   (secondMenuEntry != 1 || !computerPageHandler.testLeft()) &&
+		   (secondMenuEntry != 2 || !computerPageHandler.testRight())) {
+			return false;
+		}
+		return true;
 	}
 }
