@@ -25,7 +25,7 @@ public class Demo {
         	System.out.println(computers.getComputer(12));
         	computers.deleteComputer(12);
         	System.out.println(computers.getComputer(12));
-        	Optional<Company> company = Optional.of(companies.getCompany("Sony"));
+        	Optional<Company> company = companies.getCompany("Sony");
         	computers.insertComputer(new Computer.ComputerBuilder("Test").manufacturer(company).build());
         	computers.updateComputer(new Computer.ComputerBuilder("MacBook Pro 15.4 inch")
         			                             .id(1)

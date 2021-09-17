@@ -14,12 +14,12 @@ import com.oxyl.persistence.DatabaseConnection;
 
 public class ComputerDAO implements ComputerDao {
 	public static final short NUMBER_RESULT_BY_PAGE = 10;
-	private static final String QUERY_SELECT = "select * from computer";
-	private static final String QUERY_GET = "select * from computer where id=";
+	private static final String QUERY_SELECT = "select id,name,introduced,discontinued,company_id from computer";
+	private static final String QUERY_GET = "select id,name,introduced,discontinued,company_id from computer where id=";
 	private static final String QUERY_INSERT = "insert INTO computer VALUES (NULL, ?, ?, ?, ?)";
 	private static final String QUERY_UPDATE = "update computer SET name=?, introduced=?, discontinued=?, company_id=? where id=?";
 	private static final String QUERY_DELETE = "delete from computer where id=";
-	private static final String QUERY_GET_RANGE = "select * from computer limit ?,"+Short.toString(NUMBER_RESULT_BY_PAGE);
+	private static final String QUERY_GET_RANGE = "select id,name,introduced,discontinued,company_id from computer limit ?,"+Short.toString(NUMBER_RESULT_BY_PAGE);
 	private static final String QUERY_COUNT = "select count(id) from computer";
 	
 	private DatabaseConnection db;
@@ -42,7 +42,11 @@ public class ComputerDAO implements ComputerDao {
 	
 	private Computer extractComputer(ResultSet rs) throws SQLException {
 		Optional<Company> company = instance.getCompany(rs.getInt(5));
-		return new Computer.ComputerBuilder(rs.getString(2)).id(rs.getInt(1)).introductionDate(rs.getDate(3)).discontinuedDate(rs.getDate(4)).manufacturer(company).build();
+		return new Computer.ComputerBuilder(rs.getString(2))
+				           .id(rs.getInt(1))
+				           .introductionDate(rs.getDate(3))
+				           .discontinuedDate(rs.getDate(4))
+				           .manufacturer(company).build();
 	}
 	
 	public List<Computer> getAllComputers() {

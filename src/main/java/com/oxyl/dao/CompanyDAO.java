@@ -18,10 +18,10 @@ public class CompanyDAO {
 	public ArrayList<Company> companyList;
 	private DatabaseConnection db;
 	public static final short NUMBER_RESULT_BY_PAGE = 10;
-	static final String QUERY_ALL = "select * from company";
-	static final String QUERY_GET_BY_ID = "select * from company where id=";
-	static final String QUERY_GET_BY_NAME = "select * from company where name=?";
-	private static final String QUERY_GET_RANGE = "select * from company limit ?,"+Short.toString(NUMBER_RESULT_BY_PAGE);
+	private static final String QUERY_ALL = "select id,name from company";
+	private static final String QUERY_GET_BY_ID = "select id,name from company where id=";
+	private static final String QUERY_GET_BY_NAME = "select id,name from company where name=?";
+	private static final String QUERY_GET_RANGE = "select id,name from company limit ?,"+Short.toString(NUMBER_RESULT_BY_PAGE);
 	private static final String QUERY_COUNT = "select count(id) from company";
 	
 	
@@ -69,19 +69,19 @@ public class CompanyDAO {
 		return Optional.empty();
 	}
 	
-	public Company getCompany(String name) {
+	public Optional<Company> getCompany(String name) {
 		try {
 	        PreparedStatement ps = db.connection.prepareStatement(QUERY_GET_BY_NAME);
 	        ps.setString(1,name);
 	        ResultSet rs = ps.executeQuery();
 	        if(rs.next()) {
-	            return extractCompany(rs);
+	            return Optional.of(extractCompany(rs));
 	        }
 
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
-	    return null; 
+	    return Optional.empty();
 	}
 	
 	private Company extractCompany(ResultSet rs) throws SQLException {
