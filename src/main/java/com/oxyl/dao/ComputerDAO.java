@@ -108,9 +108,7 @@ public class ComputerDAO implements ComputerDao {
 	        ps.setString(1, computer.getComputerName());
 	        ps.setDate(2, computer.getIntroductionDate());
 	        ps.setDate(3, computer.getDiscontinuedDate());
-	        if(computer.getManufacturer()!= null) {
-	        	ps.setInt(4, computer.getManufacturer().map(Company::getId).orElse(null));
-	        }
+	        ps.setInt(4, computer.getManufacturer().map(Company::getId).orElse(null));
 	        ps.setInt(5, computer.getId());
 	        int i = ps.executeUpdate();
 

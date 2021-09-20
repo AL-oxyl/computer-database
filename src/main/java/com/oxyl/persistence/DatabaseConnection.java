@@ -27,5 +27,15 @@ public class DatabaseConnection {
 		}
 		return instance;
 	}
+	
+	public void close() {
+		try {
+			this.connection.close();
+		} catch (SQLException e) {
+			System.out.println("Unable to close connexion");
+			e.printStackTrace();
+		}
+		
+	}
 }
 	

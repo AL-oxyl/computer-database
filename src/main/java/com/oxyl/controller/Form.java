@@ -122,14 +122,13 @@ public class Form {
 		boolean validId = false;
 		while(!validId) {
 			System.out.print("Entrez l'id de l'ordinateur souhaité : ");
-			Computer computer = getSecureComputerInfoInput();
-			if (computer!=null) {
-				ComputerDAO computers = new ComputerDAO();
-				computers.deleteComputer(computer.getId());
-				validId = true;
-				System.out.println("L'ordinateur " + computer.getId() + " a bien été supprimé.\n"); 
+			int id = getSecureComputerIdInput();
+			ComputerDAO computers = new ComputerDAO();
+			validId = true;
+			if(computers.deleteComputer(id)) {
+				System.out.println("L'ordinateur " + id + " a bien été supprimé.\n"); 
 			} else {
-				System.out.println("ID non valide. Merci de mettre une ID valide");
+				System.out.println("ID non valide. Aucun ordinateur n'a été supprimé");
 			}
 		}
 	}
@@ -170,6 +169,22 @@ public class Form {
 				break;
 			}
 		}
+	}
+	
+	private int getSecureComputerIdInput() {
+		boolean validEntry = false;
+		while(!validEntry) {
+			if (scan.hasNextInt()) {
+				System.out.println("Entrée valide");
+				return scan.nextInt();
+			} else {
+				System.out.println("\nCeci n'est pas un entier, merci de rentrer un entier\n");
+			}
+			scan.nextLine();
+			System.out.print("Entrez l'id de l'ordinateur souhaité :");
+		}
+		System.out.println("Entry error");
+		return 0;
 	}
 	
 	private void getSecureMenuInput() {
