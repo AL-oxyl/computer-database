@@ -136,28 +136,35 @@ public class Form {
 	
 	public void menu() {
 		while(continueMenu) {
+			FormChoice choice = FormChoice.QUIT;
 			Menu.showBootingMenu();
 			getSecureMenuInput();
-			switch(firstMenuEntry) {
-			case 1:
+			for(FormChoice formChoice : FormChoice.values()) {
+				if (formChoice.getId() == firstMenuEntry) {
+					choice = formChoice;
+					break;
+				}
+			}
+			switch(choice) {
+			case LISTCOMPUTER:
 				showComputerList();
 				break;
-			case 2:
+			case LISTCOMPANY:
 				showCompanyList();
 				break;
-			case 3:
+			case COMPUTERINFO:
 				showComputerInfo();
 				break;
-			case 4:
+			case CREATECOMPUTER:
 				addNewComputerInfo();
 				break;
-			case 5:
+			case UPDATECOMPUTER:
 				updateComputerInfo();
 				break;
-			case 6:
+			case DELETECOMPUTER:
 				deleteComputerInfo();
 				break;
-			case 7:
+			case QUIT:
 				this.continueMenu = false;
 				this.scan.close();
 				break;
