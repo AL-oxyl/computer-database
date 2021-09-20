@@ -7,6 +7,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.oxyl.model.Company;
 import com.oxyl.persistence.DatabaseConnection;
 
@@ -23,6 +26,7 @@ public class CompanyDAO {
 	private static final String QUERY_GET_BY_NAME = "select id,name from company where name=?";
 	private static final String QUERY_GET_RANGE = "select id,name from company limit ?,"+Short.toString(NUMBER_RESULT_BY_PAGE);
 	private static final String QUERY_COUNT = "select count(id) from company";
+	private static final Logger LOGGER = LoggerFactory.getLogger(CompanyDAO.class);
 	
 	
 	private CompanyDAO() {
@@ -39,7 +43,7 @@ public class CompanyDAO {
 			}
 			this.companyList = companyList;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Unable to query all in company table",e);
 		}
 	}
 	
@@ -64,7 +68,7 @@ public class CompanyDAO {
 	        }
 
 	    } catch (SQLException e) {
-	        e.printStackTrace();
+			LOGGER.error("Unable to query a company at the specified id in company table",e);
 	    }
 		return Optional.empty();
 	}
@@ -79,7 +83,7 @@ public class CompanyDAO {
 	        }
 
 	    } catch (SQLException e) {
-	        e.printStackTrace();
+			LOGGER.error("Unable to query a company at the specified name in company table",e);
 	    }
 	    return Optional.empty();
 	}
@@ -98,7 +102,7 @@ public class CompanyDAO {
 	        	companyRange.add(extractCompany(rs));
 	        }
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Unable to query a company range in company table",e);
 		}
 		return companyRange;
 	}
@@ -111,7 +115,7 @@ public class CompanyDAO {
 	        	return rs.getInt(1);
 	        }
 	    } catch (SQLException e) {
-	        e.printStackTrace();
+			LOGGER.error("Unable to query the company count in company table",e);
 	    }
 	    return 0; 
 	}

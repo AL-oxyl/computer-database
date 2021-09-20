@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.persistence.DatabaseConnection;
@@ -21,7 +24,8 @@ public class ComputerDAO implements ComputerDao {
 	private static final String QUERY_DELETE = "delete from computer where id=";
 	private static final String QUERY_GET_RANGE = "select id,name,introduced,discontinued,company_id from computer limit ?,"+Short.toString(NUMBER_RESULT_BY_PAGE);
 	private static final String QUERY_COUNT = "select count(id) from computer";
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerDAO.class);
+
 	private DatabaseConnection db;
 	private CompanyDAO instance;
 	
@@ -58,7 +62,7 @@ public class ComputerDAO implements ComputerDao {
 				companyList.add(extractComputer(rs));
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Unable to query all in computer table",e);
 		}
 		return companyList;
 	}
@@ -74,7 +78,7 @@ public class ComputerDAO implements ComputerDao {
 	        }
 	        return computerRange;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Unable to query a range in computer table",e);
 		}
 		return null;
 	}
@@ -93,10 +97,9 @@ public class ComputerDAO implements ComputerDao {
 	      }
 
 	    } catch (SQLException e) {
-	        e.printStackTrace();
+	        LOGGER.error("Unable to insert a computer in computer table",e);
 	    } catch (NullPointerException e) {
-	    	System.out.println("The company hasn't properly been initialised");
-	    	e.printStackTrace();
+	    	LOGGER.error("The company hasn't properly been initialised",e);
 	    }
 
 	    return false;
@@ -117,9 +120,8 @@ public class ComputerDAO implements ComputerDao {
 	      }
 
 	    } catch (SQLException e) {
-	        e.printStackTrace();
+	        LOGGER.error("Unable to update a computer in computer table",e);
 	    }
-
 	    return false;
 	}
 	
@@ -132,7 +134,7 @@ public class ComputerDAO implements ComputerDao {
 	        }
 
 	    } catch (SQLException e) {
-	        e.printStackTrace();
+	        LOGGER.error("Unable to delete a computer in computer table",e);
 	    }
 
 	    return false; 
@@ -146,9 +148,8 @@ public class ComputerDAO implements ComputerDao {
 	        	return rs.getInt(1);
 	        }
 	    } catch (SQLException e) {
-	        e.printStackTrace();
+	        LOGGER.error("Unable to get the computer count in computer table",e);
 	    }
-
 	    return 0; 
 	}
 }

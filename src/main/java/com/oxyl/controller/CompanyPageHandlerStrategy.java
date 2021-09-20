@@ -2,6 +2,9 @@ package com.oxyl.controller;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.oxyl.dao.CompanyDAO;
 import com.oxyl.model.Company;
 import com.oxyl.ui.Pagination;
@@ -11,6 +14,8 @@ public class CompanyPageHandlerStrategy implements GenericPageHandler<Company>{
 	private CompanyDAO companies;
 	private int pageIndex;
 	private ArrayList<Company> companyPageList;
+	private static final Logger LOGGER = LoggerFactory.getLogger(CompanyPageHandlerStrategy.class);
+
 	
 	public CompanyPageHandlerStrategy(ArrayList<Company> pageList, int numberPage) {
 		this.companyPageList = pageList;
@@ -47,6 +52,7 @@ public class CompanyPageHandlerStrategy implements GenericPageHandler<Company>{
 				break;
 		}	
 		this.companyPageList = companies.getCompanyRange(pageIndex);
+		LOGGER.info("Company page info updated");
 	}
 	
 	public boolean testLeft() {

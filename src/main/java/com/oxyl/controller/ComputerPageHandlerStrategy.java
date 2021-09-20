@@ -1,6 +1,10 @@
 package com.oxyl.controller;
 
 import java.util.ArrayList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.oxyl.dao.ComputerDAO;
 import com.oxyl.model.Computer;
 import com.oxyl.ui.Pagination;
@@ -10,6 +14,8 @@ public class ComputerPageHandlerStrategy implements GenericPageHandler<Computer>
 	private ArrayList<Computer> computerPageList;
 	private int pageIndex;
 	private int numberPage;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerPageHandlerStrategy.class);
+
 	
 	public ComputerPageHandlerStrategy(ArrayList<Computer> computerPageList, int numberComputer) {
 		this.setPageList(computerPageList);
@@ -52,6 +58,8 @@ public class ComputerPageHandlerStrategy implements GenericPageHandler<Computer>
 				break;
 		}	
 		this.computerPageList = computers.getComputerRange(pageIndex);
+		LOGGER.info("Computer page info updated");
+
 	}
 	
 	public boolean testLeft() {

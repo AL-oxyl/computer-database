@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.oxyl.dao.CompanyDAO;
 import com.oxyl.dao.ComputerDAO;
 import com.oxyl.model.Computer;
@@ -25,6 +28,8 @@ public class Form {
 	private boolean continueMenu;
 	PageComputer pageComputer;
 	PageCompany pageCompany;
+	private static final Logger LOGGER = LoggerFactory.getLogger(Form.class);
+
 	
 	public Form() {
 		this.scan = new Scanner(System.in);
@@ -80,7 +85,7 @@ public class Form {
 				computerInfo.show();
 				validId = true;
 			} else {
-				System.out.println("ID non valide. Merci de mettre une ID valide");
+				LOGGER.error("ID non valide. Merci de mettre une ID valide");
 			}
 		}
 		System.out.println();
@@ -96,7 +101,7 @@ public class Form {
 				computerInfo.show();
 				validId = true;
 			} else {
-				System.out.println("ID non valide. Merci de mettre une ID valide");
+				LOGGER.error("ID non valide. Merci de mettre une ID valide");
 			}
 		}
 		System.out.println();
@@ -112,7 +117,7 @@ public class Form {
 				computerInfo.show();
 				validId = true;
 			} else {
-				System.out.println("ID non valide. Merci de mettre une ID valide");
+				LOGGER.error("ID non valide. Merci de mettre une ID valide");
 			}
 		}
 		System.out.println();
@@ -126,9 +131,9 @@ public class Form {
 			ComputerDAO computers = new ComputerDAO();
 			validId = true;
 			if(computers.deleteComputer(id)) {
-				System.out.println("L'ordinateur " + id + " a bien été supprimé.\n"); 
+				LOGGER.info("L'ordinateur " + id + " a bien été supprimé.\n"); 
 			} else {
-				System.out.println("ID non valide. Aucun ordinateur n'a été supprimé");
+				LOGGER.error("ID non valide. Aucun ordinateur n'a été supprimé");
 			}
 		}
 	}
@@ -175,15 +180,15 @@ public class Form {
 		boolean validEntry = false;
 		while(!validEntry) {
 			if (scan.hasNextInt()) {
-				System.out.println("Entrée valide");
+				LOGGER.info("Entrée valide");
 				return scan.nextInt();
 			} else {
-				System.out.println("\nCeci n'est pas un entier, merci de rentrer un entier\n");
+				LOGGER.error("\nCeci n'est pas un entier, merci de rentrer un entier\n");
 			}
 			scan.nextLine();
 			System.out.print("Entrez l'id de l'ordinateur souhaité :");
 		}
-		System.out.println("Entry error");
+		LOGGER.debug("Entry error at getSecureComputerIdInput in Form.class");
 		return 0;
 	}
 	
@@ -195,15 +200,15 @@ public class Form {
 				if (validFirstMenuValues.contains(firstMenuEntry)) {
 					break;
 				} else {
-					System.out.println("\nCet entier n'est pas reconnu, merci de rentrer une valeur affiché sur le menu\n");
+					LOGGER.error("\nCet entier n'est pas reconnu, merci de rentrer une valeur affiché sur le menu\n");
 				}
 			} else {
-				System.out.println("\nCeci n'est pas un entier, merci de rentrer un entier\n");
+				LOGGER.error("\nCeci n'est pas un entier, merci de rentrer un entier\n");
 			}
 			scan.nextLine();
 			Menu.showBootingMenu();
 		}
-		System.out.println("Entrée valide");
+		LOGGER.info("Entrée valide");
 	}
 	
 	private void getSecureComputerPaginationInput() {
@@ -214,15 +219,15 @@ public class Form {
 				if (!isOutOfBoundComputer()) {
 					break;
 				} else {
-					System.out.println("\nCet entier n'est pas reconnu, merci de rentrer une valeur affiché sur le menu\n");
+					LOGGER.error("\nCet entier n'est pas reconnu, merci de rentrer une valeur affiché sur le menu\n");
 				}
 			} else {
-				System.out.println("\nCeci n'est pas un entier, merci de rentrer un entier\n");
+				LOGGER.error("\nCeci n'est pas un entier, merci de rentrer un entier\n");
 			}
 			scan.nextLine();
 			PageComputer.controllerMessage(computerPageHandler.getPageState());
 		}
-		System.out.println("Entrée valide");
+		LOGGER.info("Entrée valide");
 	} 
 	
 	private void getSecureCompaniesPaginationInput() {
@@ -233,15 +238,15 @@ public class Form {
 				if (!isOutOfBoundCompany()) {
 					break;
 				} else {
-					System.out.println("\nCet entier n'est pas reconnu, merci de rentrer une valeur affiché sur le menu\n");
+					LOGGER.error("\nCet entier n'est pas reconnu, merci de rentrer une valeur affiché sur le menu\n");
 				}
 			} else {
-				System.out.println("\nCeci n'est pas un entier, merci de rentrer un entier\n");
+				LOGGER.error("\nCeci n'est pas un entier, merci de rentrer un entier\n");
 			}
 			scan.nextLine();
 			PageCompany.controllerMessage(companyPageHandler.getPageState());
 		}
-		System.out.println("Entrée valide");
+		LOGGER.info("Entrée valide");
 	} 
 	
 	private Computer getSecureComputerInfoInput() {
@@ -255,10 +260,10 @@ public class Form {
 					Computer computer = computers.getComputer(value);	
 					return computer;
 				} catch (SQLException e){
-					System.out.println("ID non valide, merci de réessayer");
+					LOGGER.error("ID non valide, merci de réessayer");
 				}	
 			} else {
-				System.out.println("\nCeci n'est pas un entier, merci de rentrer un entier\n");
+				LOGGER.error("\nCeci n'est pas un entier, merci de rentrer un entier\n");
 			}
 			scan.nextLine();
 			System.out.print("Entrez l'id de l'ordinateur souhaité :");
