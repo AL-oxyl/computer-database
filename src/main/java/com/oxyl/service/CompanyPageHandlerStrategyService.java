@@ -1,31 +1,43 @@
-package com.oxyl.controller;
+package com.oxyl.service;
 
 import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oxyl.controller.GenericPageHandler;
 import com.oxyl.dao.CompanyDAO;
 import com.oxyl.model.Company;
 import com.oxyl.ui.Pagination;
 
-public class CompanyPageHandlerStrategy implements GenericPageHandler<Company>{
+public class CompanyPageHandlerStrategyService implements GenericPageHandler<Company>{
 	private int numberPage;
 	private CompanyDAO companies;
 	private int pageIndex;
 	private ArrayList<Company> companyPageList;
-	private static final Logger LOGGER = LoggerFactory.getLogger(CompanyPageHandlerStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CompanyPageHandlerStrategyService.class);
 
 	
-	public CompanyPageHandlerStrategy(ArrayList<Company> pageList, int numberPage) {
-		this.companyPageList = pageList;
-		this.pageIndex = 0;
-		this.numberPage = numberPage/CompanyDAO.NUMBER_RESULT_BY_PAGE;
+	public CompanyPageHandlerStrategyService() {
 		this.companies = CompanyDAO.getInstance();
+		this.companyPageList = companies.getCompanyRange(0);
+		this.pageIndex = 0;
+		int numberResult = companies.getCompanyCount();
+		this.numberPage = (numberResult/CompanyDAO.NUMBER_RESULT_BY_PAGE)+1;
  	}
 
 	public int getPageIndex() {
 		return pageIndex;
+	}
+	
+	public void setPageIndex(int index) {
+		if(index < 0) {
+			LOGGER.error("Index négatif interdit");
+		} else if (index >= numberPage) {
+			LOGGER.error("Index supérieur au nombre de page total");
+		} else {
+			this.pageIndex = index;
+		}
 	}
 
 
@@ -45,10 +57,10 @@ public class CompanyPageHandlerStrategy implements GenericPageHandler<Company>{
 	public void updateInfo(int entry) {
 		switch (entry) {
 			case 1:
-				pageIndex--;
+				setPageIndex(pageIndex-1);
 				break;
 			case 2:
-				pageIndex++;
+				setPageIndex(pageIndex+1);
 				break;
 		}	
 		this.companyPageList = companies.getCompanyRange(pageIndex);

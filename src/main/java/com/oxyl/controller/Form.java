@@ -8,9 +8,10 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oxyl.dao.CompanyDAO;
 import com.oxyl.dao.ComputerDAO;
 import com.oxyl.model.Computer;
+import com.oxyl.service.CompanyPageHandlerStrategyService;
+import com.oxyl.service.ComputerPageHandlerStrategyService;
 import com.oxyl.ui.ComputerInfo;
 import com.oxyl.ui.Menu;
 import com.oxyl.ui.PageCompany;
@@ -22,8 +23,8 @@ public class Form {
 	private int secondMenuEntry;
 	private final HashSet<Integer> validFirstMenuValues = new HashSet<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6, 7));
 	private final HashSet<Integer> validSecondMenuValues = new HashSet<Integer>(Arrays.asList(1, 2, 3));
-	private ComputerPageHandlerStrategy computerPageHandler;
-	private CompanyPageHandlerStrategy companyPageHandler;
+	private ComputerPageHandlerStrategyService computerPageHandler;
+	private CompanyPageHandlerStrategyService companyPageHandler;
 	private Scanner scan;
 	private boolean continueMenu;
 	PageComputer pageComputer;
@@ -38,15 +39,13 @@ public class Form {
 	}
 	
 	private void initComputerPage() {
-		ComputerDAO computers = new ComputerDAO();
-		this.computerPageHandler = new ComputerPageHandlerStrategy(computers.getComputerRange(0),computers.getComputerCount());
+		this.computerPageHandler = new ComputerPageHandlerStrategyService();
 		this.pageComputer = new PageComputer(computerPageHandler.getPageList());
 		pageComputer.showPage();
 	}
 	
 	private void initCompanyPage() {
-		CompanyDAO companies = CompanyDAO.getInstance();
-		this.companyPageHandler = new CompanyPageHandlerStrategy(companies.getCompanyRange(0),companies.getCompanyCount());
+		this.companyPageHandler = new CompanyPageHandlerStrategyService();
 		this.pageCompany = new PageCompany(companyPageHandler.getPageList());
 		pageCompany.showPage();
 	}

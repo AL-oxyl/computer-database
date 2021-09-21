@@ -1,26 +1,29 @@
-package com.oxyl.controller;
+package com.oxyl.service;
 
 import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oxyl.controller.GenericPageHandler;
 import com.oxyl.dao.ComputerDAO;
 import com.oxyl.model.Computer;
 import com.oxyl.ui.Pagination;
 
-public class ComputerPageHandlerStrategy implements GenericPageHandler<Computer>{
+public class ComputerPageHandlerStrategyService implements GenericPageHandler<Computer>{
 	
 	private ArrayList<Computer> computerPageList;
 	private int pageIndex;
 	private int numberPage;
-	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerPageHandlerStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerPageHandlerStrategyService.class);
 
 	
-	public ComputerPageHandlerStrategy(ArrayList<Computer> computerPageList, int numberComputer) {
-		this.setPageList(computerPageList);
+	public ComputerPageHandlerStrategyService() {
+		ComputerDAO computers = new ComputerDAO();
+		this.computerPageList = computers.getComputerRange(0);
 		this.pageIndex = 0;
-		this.numberPage = (numberComputer/ComputerDAO.NUMBER_RESULT_BY_PAGE)+1;
+		int numberResult = computers.getComputerCount();
+		this.numberPage = (numberResult/ComputerDAO.NUMBER_RESULT_BY_PAGE)+1;
 	}
 
 	public int getPageIndex() {
