@@ -55,6 +55,7 @@ public class CompanyPageHandlerStrategyService implements GenericPageHandler<Com
 	}
 	
 	public void updateInfo(int entry) {
+		int ref = pageIndex;
 		switch (entry) {
 			case 1:
 				setPageIndex(pageIndex-1);
@@ -63,8 +64,10 @@ public class CompanyPageHandlerStrategyService implements GenericPageHandler<Com
 				setPageIndex(pageIndex+1);
 				break;
 		}	
-		this.companyPageList = companies.getCompanyRange(pageIndex);
-		LOGGER.info("Company page info updated");
+		if(ref != pageIndex) {
+			this.companyPageList = companies.getCompanyRange(pageIndex);
+			LOGGER.info("Company page info updated");
+		}
 	}
 	
 	public boolean testLeft() {

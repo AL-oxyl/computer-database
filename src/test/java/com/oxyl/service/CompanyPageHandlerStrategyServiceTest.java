@@ -1,4 +1,5 @@
 package com.oxyl.service;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +10,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CompanyPageHandlerStrategyServiceTest {
@@ -17,7 +19,7 @@ public class CompanyPageHandlerStrategyServiceTest {
 	private static CompanyDAO dao;
 
 	@InjectMocks
-	private CompanyPageHandlerStrategyService service = new CompanyPageHandlerStrategyService();
+	private CompanyPageHandlerStrategyService service;
 	
 	@Before
 	public void initMocks() {
@@ -59,11 +61,13 @@ public class CompanyPageHandlerStrategyServiceTest {
 		service.setPageIndex(15);
 		Assert.assertEquals(service.getPageIndex(), 0);
 	}
-	/**
+	
 	@Test
 	public final void testNumberPageValue() {
-		Assert.assertEquals((dao.getCompanyCount()/CompanyDAO.NUMBER_RESULT_BY_PAGE)+1 , service.getNumberPage());
-	}**/
+		int NUMBER_RESULT_BY_PAGE = 10;
+		Mockito.when(dao.getCompanyCount()).thenReturn(42);
+		Assert.assertEquals((dao.getCompanyCount()/NUMBER_RESULT_BY_PAGE)+1 , service.getNumberPage());
+	}
 	
 	@After
 	public final void testPositivePageIndex() {

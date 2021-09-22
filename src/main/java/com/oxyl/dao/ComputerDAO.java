@@ -35,13 +35,13 @@ public class ComputerDAO implements ComputerDao {
 		this.instance = CompanyDAO.getInstance();
 	}
 	
-	public Computer getComputer(int id) throws SQLException {
+	public Optional<Computer> getComputer(int id) throws SQLException {
 	    Statement statement = db.connection.createStatement();
 	    ResultSet rs = statement.executeQuery(QUERY_GET + id);
 	    if(rs.next()) {
-	         return extractComputer(rs);
+	         return Optional.of(extractComputer(rs));
 	    }
-	    return null; 
+	    return Optional.empty(); 
 	}
 	
 	private Computer extractComputer(ResultSet rs) throws SQLException {

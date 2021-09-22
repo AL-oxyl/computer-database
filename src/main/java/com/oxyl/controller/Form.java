@@ -3,6 +3,7 @@ package com.oxyl.controller;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -78,9 +79,9 @@ public class Form {
 		boolean validId = false;
 		while(!validId) {
 			System.out.print("Entrez l'id de l'ordinateur souhaité : ");
-			Computer computer = getSecureComputerInfoInput();
-			if (computer!=null) {
-				ComputerInfo computerInfo = new ComputerInfo(computer);
+			Optional<Computer> computer = getSecureComputerInfoInput();
+			if (computer.isPresent()) {
+				ComputerInfo computerInfo = new ComputerInfo(computer.get());
 				computerInfo.show();
 				validId = true;
 			} else {
@@ -94,9 +95,9 @@ public class Form {
 		boolean validId = false;
 		while(!validId) {
 			System.out.print("Bienvenue dans le menu de création d'ordinateur");
-			Computer computer = getSecureComputerInfoInput();
-			if (computer!=null) {
-				ComputerInfo computerInfo = new ComputerInfo(computer);
+			Optional<Computer> computer = getSecureComputerInfoInput();
+			if (computer.isPresent()) {
+				ComputerInfo computerInfo = new ComputerInfo(computer.get());
 				computerInfo.show();
 				validId = true;
 			} else {
@@ -110,9 +111,9 @@ public class Form {
 		boolean validId = false;
 		while(!validId) {
 			System.out.print("Entrez l'id de l'ordinateur souhaité : ");
-			Computer computer = getSecureComputerInfoInput();
-			if (computer!=null) {
-				ComputerInfo computerInfo = new ComputerInfo(computer);
+			Optional<Computer> computer = getSecureComputerInfoInput();
+			if (computer.isPresent()) {
+				ComputerInfo computerInfo = new ComputerInfo(computer.get());
 				computerInfo.show();
 				validId = true;
 			} else {
@@ -248,7 +249,7 @@ public class Form {
 		LOGGER.info("Entrée valide");
 	} 
 	
-	private Computer getSecureComputerInfoInput() {
+	private Optional<Computer> getSecureComputerInfoInput() {
 		boolean validEntry = false;
 		int value;
 		while(!validEntry) {
@@ -256,7 +257,7 @@ public class Form {
 				value = scan.nextInt();
 				try {
 					ComputerDAO computers = new ComputerDAO();
-					Computer computer = computers.getComputer(value);	
+					Optional<Computer> computer = computers.getComputer(value);	
 					return computer;
 				} catch (SQLException e){
 					LOGGER.error("ID non valide, merci de réessayer");
@@ -267,7 +268,7 @@ public class Form {
 			scan.nextLine();
 			System.out.print("Entrez l'id de l'ordinateur souhaité :");
 		}
-		return null;
+		return Optional.empty();
 	}
 	
 	private boolean isOutOfBoundCompany() {
