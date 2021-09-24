@@ -15,6 +15,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	private ArrayList<Computer> computerPageList;
 	private int pageIndex;
 	private int numberPage;
+	private int numberComputer;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerPageHandlerStrategyService.class);
 
 	
@@ -22,8 +23,8 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		ComputerDAO computers = new ComputerDAO();
 		this.computerPageList = computers.getComputerRange(0);
 		this.pageIndex = 0;
-		int numberResult = computers.getComputerCount();
-		this.numberPage = (numberResult/ComputerDAO.NUMBER_RESULT_BY_PAGE)+1;
+		this.numberComputer = computers.getComputerCount();
+		this.numberPage = (numberComputer/ComputerDAO.NUMBER_RESULT_BY_PAGE)+1;
 	}
 
 	public int getPageIndex() {
@@ -45,9 +46,12 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		return numberPage;
 	}	
 	
+	public int getNumberComputer() {
+		return numberComputer;
+	}
+	
 	public void handlePage(int result) {
 		updateInfo(result);
-		
 	}
 	
 	public void updateInfo(int entry) {

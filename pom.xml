@@ -7,7 +7,7 @@
   <groupId>com.oxyl</groupId>
   <artifactId>cdb</artifactId>
   <version>cdb-0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
 
   <name>cdb</name>
   <!-- FIXME change it to the project's website -->

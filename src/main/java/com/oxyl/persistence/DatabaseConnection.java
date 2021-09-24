@@ -14,11 +14,14 @@ public class DatabaseConnection {
 	
 	private DatabaseConnection() {
 		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			this.connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/computer-database-db?enabledTLSProtocols=TLSv1.2"
-					              + "&serverTimezone=UTC","admincdb","qwerty1234"); //&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false 
+		              + "&serverTimezone=UTC","admincdb","qwerty1234"); //&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false 
 		} catch (SQLException e) {
 			LOGGER.error("Unable to open the connexion", e);
-		}		
+		} catch (ClassNotFoundException e) {
+			LOGGER.error("Unable to find driver class", e);
+		}
 	}
 
 	public static DatabaseConnection getInstance() {
