@@ -10,6 +10,11 @@ public class Company {
 		this.name = name;
 	}
 	
+	public Company() {
+		this.id = -1;
+		this.name = "";
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -24,6 +29,6 @@ public class Company {
 	}
 	@Override
 	public String toString() {
-		return "id : " + id + "\tname : " + name;
+		return name;
 	}
 }

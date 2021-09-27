@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oxyl.controller.GenericPageHandler;
 import com.oxyl.dao.CompanyDAO;
 import com.oxyl.model.Company;
 import com.oxyl.ui.Pagination;
@@ -50,26 +49,25 @@ public class CompanyPageHandlerStrategyService implements GenericPageHandler<Com
 	}	
 	
 	public void handlePage(int result) {
-		updateInfo(result);
-		
+		switch (result) {
+			case 1:
+				updateInfo(pageIndex-1);
+				break;
+			case 2:
+				updateInfo(pageIndex+1);
+				break;
+		}		
 	}
 	
 	public void updateInfo(int entry) {
 		int ref = pageIndex;
-		switch (entry) {
-			case 1:
-				setPageIndex(pageIndex-1);
-				break;
-			case 2:
-				setPageIndex(pageIndex+1);
-				break;
-		}	
+		setPageIndex(entry);
 		if(ref != pageIndex) {
 			this.companyPageList = companies.getCompanyRange(pageIndex);
-			LOGGER.info("Company page info updated");
+			LOGGER.info("Computer page info updated");
 		}
 	}
-	
+		
 	public boolean testLeft() {
 		if (pageIndex == 0) {
 			return true;

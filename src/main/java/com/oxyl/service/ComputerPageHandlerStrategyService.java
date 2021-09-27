@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oxyl.controller.GenericPageHandler;
 import com.oxyl.dao.ComputerDAO;
+import com.oxyl.dto.ComputerDTO;
 import com.oxyl.model.Computer;
 import com.oxyl.ui.Pagination;
 
-public class ComputerPageHandlerStrategyService implements GenericPageHandler<Computer>{
+public class ComputerPageHandlerStrategyService implements GenericPageHandler<ComputerDTO>{
 	
-	private ArrayList<Computer> computerPageList;
+	private ArrayList<ComputerDTO> computerPageList;
 	private int pageIndex;
 	private int numberPage;
 	private int numberComputer;
@@ -26,18 +26,28 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		this.numberComputer = computers.getComputerCount();
 		this.numberPage = (numberComputer/ComputerDAO.NUMBER_RESULT_BY_PAGE)+1;
 	}
+	
+	public void setPageIndex(int index) {
+		if(index < 0) {
+			LOGGER.error("Index négatif interdit");
+		} else if (index >= numberPage) {
+			LOGGER.error("Index supérieur au nombre de page total");
+		} else {
+			this.pageIndex = index;
+		}
+	}
 
 	public int getPageIndex() {
 		return pageIndex;
 	}
 
 
-	public ArrayList<Computer> getComputerPageList() {
+	public ArrayList<ComputerDTO> getComputerPageList() {
 		return computerPageList;
 	}
 
 
-	public void setPageList(ArrayList<Computer> computerPageList) {
+	public void setPageList(ArrayList<ComputerDTO> computerPageList) {
 		this.computerPageList = computerPageList;
 	}
 
@@ -51,22 +61,24 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 	
 	public void handlePage(int result) {
-		updateInfo(result);
+		switch (result) {
+			case 1:
+				updateInfo(result-1);
+				break;
+			case 2:
+				updateInfo(result+1);
+				break;
+		}		
 	}
 	
 	public void updateInfo(int entry) {
 		ComputerDAO computers = new ComputerDAO();
-		switch (entry) {
-			case 1:
-				pageIndex--;
-				break;
-			case 2:
-				pageIndex++;
-				break;
-		}	
-		this.computerPageList = computers.getComputerRange(pageIndex);
-		LOGGER.info("Computer page info updated");
-
+		int ref = pageIndex;
+		setPageIndex(entry);
+		if(ref != pageIndex) {
+			this.computerPageList = computers.getComputerRange(pageIndex);
+			LOGGER.info("Computer page info updated");
+		}
 	}
 	
 	public boolean testLeft() {
@@ -85,7 +97,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 
 	@Override
-	public ArrayList<Computer> getPageList() {
+	public ArrayList<ComputerDTO> getPageList() {
 		return computerPageList;
 	}
 	

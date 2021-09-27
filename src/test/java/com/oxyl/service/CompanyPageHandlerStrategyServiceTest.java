@@ -28,13 +28,13 @@ public class CompanyPageHandlerStrategyServiceTest {
 
 	@Test
 	public final void testBoundLeft() {
-		service.updateInfo(1);
+		service.handlePage(1);
 		Assert.assertEquals(service.getPageIndex(), 0);
 	}
 	
 	@Test 
 	public final void testBoundRight() {
-		service.updateInfo(2);
+		service.handlePage(2);
 		Assert.assertEquals(service.getPageIndex(), 1);
 	}
 	
