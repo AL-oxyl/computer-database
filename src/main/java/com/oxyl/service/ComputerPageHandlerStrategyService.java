@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.oxyl.dao.ComputerDAO;
 import com.oxyl.model.Computer;
 import com.oxyl.ui.Pagination;
+import com.oxyl.validator.IndexValidator;
 
 public class ComputerPageHandlerStrategyService implements GenericPageHandler<Computer>{
 		
@@ -16,8 +17,10 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	private int pageIndex;
 	private static int numberComputer = initNumberComputer();
 	private static int numberPage = initNumberPage();
+	private static final int NUMBER_BUTTON = 5;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerPageHandlerStrategyService.class);
-
+	private boolean pageChanged = false;
+	private int[] buttonArray = new int[]{1,2,3,4,5};
 	
 	public ComputerPageHandlerStrategyService() {
 		ComputerDAO computers = new ComputerDAO();
@@ -42,13 +45,27 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		return numberPage;
 	}
 	
-	public void setPageIndex(int index) {
-		if(index < 0) {
-			LOGGER.error("Index négatif interdit");
-		} else if (index >= numberPage) {
-			LOGGER.error("Index supérieur au nombre de page total");
+	public int[] getButtonArray() {
+		return buttonArray;
+	}
+	
+	public void updateButtonArray() {
+		if((pageIndex + 5) < numberPage) {
+			for(int i=0; i<NUMBER_BUTTON;i++) {
+				buttonArray[i] = pageIndex + i;
+			}
 		} else {
+			for(int i=0; i<NUMBER_BUTTON;i++) {
+				buttonArray[i] = numberPage + i - NUMBER_BUTTON;
+			}
+		}
+	}
+	
+	
+	public void setPageIndex(int index) {
+		if(IndexValidator.indexValidator(index)) {
 			this.pageIndex = index;
+			this.pageChanged = true;
 		}
 	}
 
@@ -57,6 +74,10 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 
 	public ArrayList<Computer> getComputerPageList() {
+		if (pageChanged) {
+			ComputerDAO computers = new ComputerDAO();
+			this.computerPageList = computers.getComputerRange(pageIndex);
+		}
 		return computerPageList;
 	}
 
@@ -93,7 +114,6 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		return false;
 	}
 	
-
 	public boolean testRight() {
 		if (pageIndex == numberPage-1) {
 			return true;

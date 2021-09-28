@@ -34,17 +34,29 @@ public class ControllerComputer extends HttpServlet {
 	}
 	
 	protected void doGet(HttpServletRequest req ,HttpServletResponse resp) throws ServletException, IOException {
-		
+		System.out.println(req.getParameter("page"));
+		if (req.getParameter("page") != null) {
+			updatePage(req);
+		}
 		ArrayList<Computer> computerList = computerPaginationService.getComputerPageList();
-		req = loadInfo(req,computerList);
-		
-		this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(req, resp);
-	}
-	
-	private static HttpServletRequest loadInfo(HttpServletRequest req, ArrayList<Computer> computerList) {
+		req.setAttribute("pages", computerPaginationService.getButtonArray());
+		req.setAttribute("testLeft", !computerPaginationService.testLeft());
+		req.setAttribute("testRight", !computerPaginationService.testRight());
 		req.setAttribute("numberComputer", ComputerPageHandlerStrategyService.getNumberComputer());
 		req.setAttribute("numberPage", ComputerPageHandlerStrategyService.getNumberPage());
 		req.setAttribute("computerList", ComputerMapper.computerListToDTOList(computerList));
-		return req;
+		this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(req, resp);
+	}
+	
+	private void updatePage(HttpServletRequest req ) {
+		try {
+			int index = Integer.parseInt(req.getParameter("page")) - 1;
+			computerPaginationService.setPageIndex(index);
+			computerPaginationService.updateButtonArray();
+		} catch(NumberFormatException e){
+			e.printStackTrace();
+		} catch(NullPointerException e) {
+			e.printStackTrace();
+		}
 	}
 }

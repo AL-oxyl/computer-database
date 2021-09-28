@@ -10,7 +10,7 @@ public class PageComputer {
 	ArrayList<ComputerDTO> currentComputerListOnPage;
 	
 	public PageComputer(ArrayList<Computer> currentComputerListOnPage) {	
-		this.currentComputerListOnPage = ComputerMapper.getInstance().computerListToDTOList(currentComputerListOnPage);
+		this.currentComputerListOnPage = ComputerMapper.computerListToDTOList(currentComputerListOnPage);
 	}
 		
 	public void showPage() {
@@ -25,6 +25,6 @@ public class PageComputer {
 	}
 	
 	public void setCurrentComputerListOnPage(ArrayList<Computer> currentComputerListOnPage) {
-		this.currentComputerListOnPage = ComputerMapper.getInstance().computerListToDTOList(currentComputerListOnPage);
+		this.currentComputerListOnPage = ComputerMapper.computerListToDTOList(currentComputerListOnPage);
 	}
  }

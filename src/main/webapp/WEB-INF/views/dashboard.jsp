@@ -83,7 +83,7 @@
                         	<td><a href="editComputer.html" onclick="">${computer.computerName}</a></td>
                         	<td>${computer.introductionDate}</td>
                         	<td>${computer.discontinuedDate}</td>
-                        	<td>${computer.manufacturer }</td>
+                        	<td>${computer.manufacturer}</td>
                     	</tr>
                     </c:forEach>      
                 </tbody>
@@ -94,21 +94,23 @@
     <footer class="navbar-fixed-bottom">
         <div class="container text-center">
             <ul class="pagination">
-                <li>
-                    <a href="#" aria-label="Previous">
-                      <span aria-hidden="true">&laquo;</span>
-                  	</a>
-              	</li>
-              	<li><a href="#">1</a></li>
-              	<li><a href="#">2</a></li>
-              	<li><a href="#">3</a></li>
-              	<li><a href="#">4</a></li>
-              	<li><a href="#">5</a></li>
-              	<li>
-                <a href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            	</li>
+            	<c:if test="${testLeft}">
+                	<li>
+                    	<a href="/cdb/dashboard?page=1" aria-label="Previous">
+                      	<span aria-hidden="hidden">&laquo;</span>
+                  		</a>
+              		</li>
+              	</c:if>	
+              	<c:forEach var ="numberPage" items="${pages}"> 
+              		<li><a href="/cdb/dashboard?page=${numberPage}">${numberPage}</a></li>
+              	</c:forEach>
+              	<c:if test="${testRight}">
+              		<li>
+                		<a href="/cdb/dashboard?page=${numberPage - 1}" aria-label="Next">
+                    		<span aria-hidden="true">&raquo;</span>
+                		</a>
+            		</li>
+            	</c:if>	
         	</ul>
 		</div>
         <div class="btn-group btn-group-sm pull-right" role="group" >
