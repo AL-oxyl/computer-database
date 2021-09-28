@@ -2,15 +2,17 @@ package com.oxyl.ui;
 import java.util.ArrayList;
 
 import com.oxyl.dto.ComputerDTO;
+import com.oxyl.mapper.ComputerMapper;
+import com.oxyl.model.Computer;
 
 public class PageComputer {
 	
 	ArrayList<ComputerDTO> currentComputerListOnPage;
 	
-	public PageComputer(ArrayList<ComputerDTO> currentComputerListOnPage) {
-		this.currentComputerListOnPage = currentComputerListOnPage;
+	public PageComputer(ArrayList<Computer> currentComputerListOnPage) {	
+		this.currentComputerListOnPage = ComputerMapper.getInstance().computerListToDTOList(currentComputerListOnPage);
 	}
-	
+		
 	public void showPage() {
 		System.out.println("id    \tname :    \tintroduction date :   \tdiscontinuedDate :   \tcompany : ");
 		for(ComputerDTO computer : currentComputerListOnPage) {
@@ -22,7 +24,7 @@ public class PageComputer {
 		System.out.println(pageText.texte);
 	}
 	
-	public void setCurrentComputerListOnPage(ArrayList<ComputerDTO> currentComputerListOnPage) {
-		this.currentComputerListOnPage = currentComputerListOnPage;
+	public void setCurrentComputerListOnPage(ArrayList<Computer> currentComputerListOnPage) {
+		this.currentComputerListOnPage = ComputerMapper.getInstance().computerListToDTOList(currentComputerListOnPage);
 	}
  }

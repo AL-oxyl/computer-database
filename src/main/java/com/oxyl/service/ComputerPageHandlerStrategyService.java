@@ -6,16 +6,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oxyl.dao.ComputerDAO;
-import com.oxyl.dto.ComputerDTO;
 import com.oxyl.model.Computer;
 import com.oxyl.ui.Pagination;
 
-public class ComputerPageHandlerStrategyService implements GenericPageHandler<ComputerDTO>{
+public class ComputerPageHandlerStrategyService implements GenericPageHandler<Computer>{
+		
 	
-	private ArrayList<ComputerDTO> computerPageList;
+	private ArrayList<Computer> computerPageList;
 	private int pageIndex;
-	private int numberPage;
-	private int numberComputer;
+	private static int numberComputer = initNumberComputer();
+	private static int numberPage = initNumberPage();
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerPageHandlerStrategyService.class);
 
 	
@@ -23,8 +23,23 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		ComputerDAO computers = new ComputerDAO();
 		this.computerPageList = computers.getComputerRange(0);
 		this.pageIndex = 0;
-		this.numberComputer = computers.getComputerCount();
-		this.numberPage = (numberComputer/ComputerDAO.NUMBER_RESULT_BY_PAGE)+1;
+	}
+	
+	private static int initNumberComputer() {
+		ComputerDAO computers = new ComputerDAO();
+		return computers.getComputerCount();
+	}
+	
+	private static int initNumberPage() {
+		return (numberComputer/ComputerDAO.NUMBER_RESULT_BY_PAGE)+1;
+	}
+	
+	public static int getNumberComputer() {		
+		return numberComputer;
+	}
+	
+	public static int getNumberPage() {		
+		return numberPage;
 	}
 	
 	public void setPageIndex(int index) {
@@ -41,24 +56,14 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		return pageIndex;
 	}
 
-
-	public ArrayList<ComputerDTO> getComputerPageList() {
+	public ArrayList<Computer> getComputerPageList() {
 		return computerPageList;
 	}
 
 
-	public void setPageList(ArrayList<ComputerDTO> computerPageList) {
+	public void setPageList(ArrayList<Computer> computerPageList) {
 		this.computerPageList = computerPageList;
-	}
-
-
-	public int getNumberPage() {
-		return numberPage;
 	}	
-	
-	public int getNumberComputer() {
-		return numberComputer;
-	}
 	
 	public void handlePage(int result) {
 		switch (result) {
@@ -97,7 +102,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 
 	@Override
-	public ArrayList<ComputerDTO> getPageList() {
+	public ArrayList<Computer> getPageList() {
 		return computerPageList;
 	}
 	

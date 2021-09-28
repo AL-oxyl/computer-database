@@ -1,7 +1,5 @@
 package com.oxyl.dto;
 
-import java.sql.Date;
-
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 
@@ -10,14 +8,22 @@ import com.oxyl.model.Computer;
 public class ComputerDTO {
 	
 	private final String computerName;
-	private final Date introductionDate;
-	private final Date discontinuedDate;
+	private final String introductionDate;
+	private final String discontinuedDate;
 	private final String manufacturer;
 	
 	public ComputerDTO(Computer computer) {
 		this.computerName = computer.getComputerName();
-		this.introductionDate = computer.getIntroductionDate();
-		this.discontinuedDate = computer.getDiscontinuedDate();
+		if(computer.getIntroductionDate()!=null) {
+			this.introductionDate = computer.getIntroductionDate().toString();
+		} else {
+			this.introductionDate = "";
+		}
+		if(computer.getDiscontinuedDate()!=null) {
+			this.discontinuedDate = computer.getDiscontinuedDate().toString();
+		} else {
+			this.discontinuedDate = "";
+		}
 		Company manufacturer = computer.getManufacturer().orElse(new Company());
 		this.manufacturer = manufacturer.getName();
 	}
@@ -26,11 +32,11 @@ public class ComputerDTO {
 		return computerName;
 	}
 
-	public Date getIntroductionDate() {
+	public String getIntroductionDate() {
 		return introductionDate;
 	}
 
-	public Date getDiscontinuedDate() {
+	public String getDiscontinuedDate() {
 		return discontinuedDate;
 	}
 

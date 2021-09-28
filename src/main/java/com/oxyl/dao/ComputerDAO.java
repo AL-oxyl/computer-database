@@ -11,7 +11,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oxyl.dto.ComputerDTO;
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.persistence.DatabaseConnection;
@@ -54,13 +53,13 @@ public class ComputerDAO implements ComputerDao {
 				           .manufacturer(company).build();
 	}
 	
-	public List<ComputerDTO> getAllComputers() {
-		List<ComputerDTO> companyList = new ArrayList<ComputerDTO>(); 
+	public List<Computer> getAllComputers() {
+		List<Computer> companyList = new ArrayList<Computer>(); 
 		try {
 			Statement test = db.connection.createStatement();
 			ResultSet rs = test.executeQuery(QUERY_SELECT);
 			while(rs.next()) {
-				companyList.add(new ComputerDTO(extractComputer(rs)));
+				companyList.add(extractComputer(rs));
 			}
 		} catch (SQLException e) {
 			LOGGER.error("Unable to query all in computer table",e);
@@ -68,15 +67,15 @@ public class ComputerDAO implements ComputerDao {
 		return companyList;
 	}
 	
-	public ArrayList<ComputerDTO> getComputerRange(int pageNumber) {
-		ArrayList<ComputerDTO> computerRange = new ArrayList<ComputerDTO>();
+	public ArrayList<Computer> getComputerRange(int pageNumber) {
+		ArrayList<Computer> computerRange = new ArrayList<Computer>();
 		try {
 			
 	        PreparedStatement ps = db.connection.prepareStatement(QUERY_GET_RANGE);
 	        ps.setInt(1,pageNumber*NUMBER_RESULT_BY_PAGE);
 	        ResultSet rs = ps.executeQuery();
 	        while(rs.next()) {
-	        	computerRange.add(new ComputerDTO(extractComputer(rs)));
+	        	computerRange.add(extractComputer(rs));
 	        }
 	        return computerRange;
 		} catch (SQLException e) {
