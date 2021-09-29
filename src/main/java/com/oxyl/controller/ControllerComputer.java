@@ -34,7 +34,6 @@ public class ControllerComputer extends HttpServlet {
 	}
 	
 	protected void doGet(HttpServletRequest req ,HttpServletResponse resp) throws ServletException, IOException {
-		System.out.println(req.getParameter("page"));
 		if (req.getParameter("page") != null) {
 			updatePage(req);
 		}
@@ -51,8 +50,10 @@ public class ControllerComputer extends HttpServlet {
 	private void updatePage(HttpServletRequest req ) {
 		try {
 			int index = Integer.parseInt(req.getParameter("page")) - 1;
+			int lastPage = computerPaginationService.getPageIndex();
+			System.out.println("last Page:" + lastPage + "current Page :" + index);
 			computerPaginationService.setPageIndex(index);
-			computerPaginationService.updateButtonArray();
+			computerPaginationService.updateButtonArray(lastPage);
 		} catch(NumberFormatException e){
 			e.printStackTrace();
 		} catch(NullPointerException e) {

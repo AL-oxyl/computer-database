@@ -106,7 +106,7 @@
               	</c:forEach>
               	<c:if test="${testRight}">
               		<li>
-                		<a href="/cdb/dashboard?page=${numberPage - 1}" aria-label="Next">
+                		<a href="/cdb/dashboard?page=${numberPage}" aria-label="Next">
                     		<span aria-hidden="true">&raquo;</span>
                 		</a>
             		</li>

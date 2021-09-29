@@ -49,15 +49,33 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		return buttonArray;
 	}
 	
-	public void updateButtonArray() {
-		if((pageIndex + 5) < numberPage) {
-			for(int i=0; i<NUMBER_BUTTON;i++) {
-				buttonArray[i] = pageIndex + i;
-			}
+	public void updateButtonArray(int lastPage) {
+		if(testLeftBlock()) {
+			updateFromLeft();
+		} else if (testRightBlock()){
+			updateFromRight();
 		} else {
-			for(int i=0; i<NUMBER_BUTTON;i++) {
-				buttonArray[i] = numberPage + i - NUMBER_BUTTON;
+			for(int i=0; i<NUMBER_BUTTON/2;i++) {
+				System.out.println(buttonArray[i]);
+				if(buttonArray[i]-1 == pageIndex ) {
+					updateFromRight();
+					return;
+				}
 			}
+			updateFromLeft();
+		}
+	}
+	
+	
+	private void updateFromLeft() {
+		for(int i=0; i<NUMBER_BUTTON;i++) {
+			buttonArray[i] = pageIndex + 1 + i;
+		}
+	}
+	
+	private void updateFromRight() {
+		for(int i=NUMBER_BUTTON - 1; i>=0;i--) {
+			buttonArray[i] = pageIndex + i - (NUMBER_BUTTON-1) + 1;
 		}
 	}
 	
@@ -116,6 +134,20 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	
 	public boolean testRight() {
 		if (pageIndex == numberPage-1) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean testRightBlock() {
+		if(pageIndex + NUMBER_BUTTON >= numberPage) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean testLeftBlock() {
+		if(pageIndex < NUMBER_BUTTON) {
 			return true;
 		}
 		return false;
