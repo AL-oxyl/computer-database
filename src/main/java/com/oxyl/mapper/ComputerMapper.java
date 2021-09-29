@@ -35,4 +35,8 @@ public class ComputerMapper {
 		}
 		return dtoList;
 	}
+	
+/**	public static Computer computerDTOToComputerModel(ComputerDTO dto){
+		return new Computer();
+	}*/
 }

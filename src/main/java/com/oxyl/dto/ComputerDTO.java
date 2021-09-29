@@ -1,5 +1,8 @@
 package com.oxyl.dto;
 
+import java.sql.Date;
+import java.util.Optional;
+
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 
@@ -14,16 +17,10 @@ public class ComputerDTO {
 	
 	public ComputerDTO(Computer computer) {
 		this.computerName = computer.getComputerName();
-		if(computer.getIntroductionDate()!=null) {
-			this.introductionDate = computer.getIntroductionDate().toString();
-		} else {
-			this.introductionDate = "";
-		}
-		if(computer.getDiscontinuedDate()!=null) {
-			this.discontinuedDate = computer.getDiscontinuedDate().toString();
-		} else {
-			this.discontinuedDate = "";
-		}
+		Optional<Date> introductionDate = computer.getIntroductionDate();
+		Optional<Date> discontinuedDate = computer.getDiscontinuedDate();
+		this.introductionDate = introductionDate.map(Date::toString).orElse("");
+		this.discontinuedDate = discontinuedDate.map(Date::toString).orElse("");
 		Company manufacturer = computer.getManufacturer().orElse(new Company());
 		this.manufacturer = manufacturer.getName();
 	}

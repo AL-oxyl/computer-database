@@ -51,7 +51,6 @@ public class ControllerComputer extends HttpServlet {
 		try {
 			int index = Integer.parseInt(req.getParameter("page")) - 1;
 			int lastPage = computerPaginationService.getPageIndex();
-			System.out.println("last Page:" + lastPage + "current Page :" + index);
 			computerPaginationService.setPageIndex(index);
 			computerPaginationService.updateButtonArray(lastPage);
 		} catch(NumberFormatException e){

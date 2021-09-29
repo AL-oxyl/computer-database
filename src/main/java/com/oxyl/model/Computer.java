@@ -5,8 +5,8 @@ import java.util.Optional;
 public class Computer {
 	private final Integer id;
 	private final String computerName;
-	private final Date introductionDate;
-	private final Date discontinuedDate;
+	private final Optional<Date> introductionDate;
+	private final Optional<Date> discontinuedDate;
 	private final Optional<Company> manufacturer;
 	
 	public Computer(ComputerBuilder builder) {
@@ -17,16 +17,16 @@ public class Computer {
 		this.manufacturer = builder.manufacturer;
 	}
 	
-	//Setter
+	//Getter
 	public String getComputerName() {
 		return computerName;
 	}
 	
-	public Date getIntroductionDate() {
+	public Optional<Date> getIntroductionDate() {
 		return introductionDate;
 	}
 
-	public Date getDiscontinuedDate() {
+	public Optional<Date> getDiscontinuedDate() {
 		return discontinuedDate;
 	}
 
@@ -48,8 +48,8 @@ public class Computer {
 	public static class ComputerBuilder {
 		private final String computerName;
 		private Integer id;
-		private Date introductionDate;
-		private Date discontinuedDate;
+		private Optional<Date> introductionDate;
+		private Optional<Date> discontinuedDate;
 		private Optional<Company> manufacturer;
 		
 		public ComputerBuilder(String name) {
@@ -61,12 +61,12 @@ public class Computer {
 			return this;
 		}
 		
-		public ComputerBuilder introductionDate(Date date) {
+		public ComputerBuilder introductionDate(Optional<Date> date) {
 			this.introductionDate = date;
 			return this;
 		}
 		
-		public ComputerBuilder discontinuedDate(Date date) {
+		public ComputerBuilder discontinuedDate(Optional<Date> date) {
 			this.discontinuedDate = date;
 			return this;
 		}

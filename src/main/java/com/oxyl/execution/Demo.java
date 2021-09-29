@@ -20,10 +20,11 @@ public class Demo {
 
         	computers.deleteComputer(12);
         	Optional<Company> company = companies.getCompany("Sony");
+        	Optional<Date> date = Optional.of(new Date(System.currentTimeMillis()));
         	computers.insertComputer(new Computer.ComputerBuilder("Test").manufacturer(company).build());
         	computers.updateComputer(new Computer.ComputerBuilder("MacBook Pro 15.4 inch")
         			                             .id(1)
-        			                             .introductionDate(new Date(System.currentTimeMillis()))
+        			                             .introductionDate(date)
         			                             .manufacturer(company)
         			                             .build());
 			db.connection.close();

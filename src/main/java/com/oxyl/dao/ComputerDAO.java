@@ -48,8 +48,8 @@ public class ComputerDAO implements ComputerDao {
 		Optional<Company> company = instance.getCompany(rs.getInt(5));
 		return new Computer.ComputerBuilder(rs.getString(2))
 				           .id(rs.getInt(1))
-				           .introductionDate(rs.getDate(3))
-				           .discontinuedDate(rs.getDate(4))
+				           .introductionDate(Optional.ofNullable(rs.getDate(3)))
+				           .discontinuedDate(Optional.ofNullable(rs.getDate(4)))
 				           .manufacturer(company).build();
 	}
 	
@@ -88,8 +88,8 @@ public class ComputerDAO implements ComputerDao {
 		try {
 			PreparedStatement ps = db.connection.prepareStatement(QUERY_INSERT);
 	        ps.setString(1, computer.getComputerName());
-	        ps.setDate(2, computer.getIntroductionDate());
-	        ps.setDate(3, computer.getDiscontinuedDate());
+	        ps.setDate(2, computer.getIntroductionDate().orElse(null));
+	        ps.setDate(3, computer.getDiscontinuedDate().orElse(null));
 	        ps.setInt(4, computer.getManufacturer().map(Company::getId).orElse(null));
 	        int i = ps.executeUpdate();
 
@@ -110,8 +110,8 @@ public class ComputerDAO implements ComputerDao {
 		try {
 			PreparedStatement ps = db.connection.prepareStatement(QUERY_UPDATE);
 	        ps.setString(1, computer.getComputerName());
-	        ps.setDate(2, computer.getIntroductionDate());
-	        ps.setDate(3, computer.getDiscontinuedDate());
+	        ps.setDate(2, computer.getIntroductionDate().orElse(null));
+	        ps.setDate(3, computer.getDiscontinuedDate().orElse(null));
 	        ps.setInt(4, computer.getManufacturer().map(Company::getId).orElse(null));
 	        ps.setInt(5, computer.getId());
 	        int i = ps.executeUpdate();
