@@ -49,6 +49,10 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		return buttonArray;
 	}
 	
+	public static void setNumberComputer(int newNumberComputer) {
+		numberComputer = newNumberComputer;
+	}
+	
 	public void updateButtonArray(int lastPage) {
 		if(testLeftBlock()) {
 			updateFromLeft();

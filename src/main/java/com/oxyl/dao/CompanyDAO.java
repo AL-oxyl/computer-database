@@ -5,12 +5,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oxyl.model.Company;
+import com.oxyl.model.Computer;
 import com.oxyl.persistence.DatabaseConnection;
 
 public class CompanyDAO {
@@ -118,5 +120,19 @@ public class CompanyDAO {
 			LOGGER.error("Unable to query the company count in company table",e);
 	    }
 	    return 0; 
+	}
+	
+	public List<Company> getAllCompanies() {
+		List<Company> companyList = new ArrayList<Company>(); 
+		try {
+			Statement test = db.connection.createStatement();
+			ResultSet rs = test.executeQuery(QUERY_ALL);
+			while(rs.next()) {
+				companyList.add(extractCompany(rs));
+			}
+		} catch (SQLException e) {
+			LOGGER.error("Unable to query all in company table",e);
+		}
+		return companyList;
 	}
 }

@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oxyl.mapper.BddMapper;
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.persistence.DatabaseConnection;
@@ -48,8 +50,8 @@ public class ComputerDAO implements ComputerDao {
 		Optional<Company> company = instance.getCompany(rs.getInt(5));
 		return new Computer.ComputerBuilder(rs.getString(2))
 				           .id(rs.getInt(1))
-				           .introductionDate(Optional.ofNullable(rs.getDate(3)))
-				           .discontinuedDate(Optional.ofNullable(rs.getDate(4)))
+				           .introductionDate(BddMapper.optTimestampToOptLocalDate(Optional.ofNullable(rs.getTimestamp(3))))
+				           .discontinuedDate(BddMapper.optTimestampToOptLocalDate(Optional.ofNullable(rs.getTimestamp(4))))
 				           .manufacturer(company).build();
 	}
 	
@@ -84,61 +86,55 @@ public class ComputerDAO implements ComputerDao {
 		return computerRange;
 	}
 	
-	public boolean insertComputer(Computer computer) {
+	public int insertComputer(Computer computer) {
+		int result = 0;
 		try {
 			PreparedStatement ps = db.connection.prepareStatement(QUERY_INSERT);
+			Optional<Timestamp> introDate = BddMapper.optLocalDateToOptTimestamp(computer.getIntroductionDate());
+			Optional<Timestamp> disDate = BddMapper.optLocalDateToOptTimestamp(computer.getDiscontinuedDate());
 	        ps.setString(1, computer.getComputerName());
-	        ps.setDate(2, computer.getIntroductionDate().orElse(null));
-	        ps.setDate(3, computer.getDiscontinuedDate().orElse(null));
+	        ps.setTimestamp(2, introDate.orElse(null));
+	        ps.setTimestamp(3, disDate.orElse(null));
 	        ps.setInt(4, computer.getManufacturer().map(Company::getId).orElse(null));
-	        int i = ps.executeUpdate();
-
-	      if(i == 1) {
-	        return true;
-	      }
-
+	        result = ps.executeUpdate();
 	    } catch (SQLException e) {
 	        LOGGER.error("Unable to insert a computer in computer table",e);
 	    } catch (NullPointerException e) {
 	    	LOGGER.error("The company hasn't properly been initialised",e);
 	    }
 
-	    return false;
+	    return result;
 	}
 	
 	public boolean updateComputer(Computer computer) {
 		try {
 			PreparedStatement ps = db.connection.prepareStatement(QUERY_UPDATE);
+			Optional<Timestamp> introDate = BddMapper.optLocalDateToOptTimestamp(computer.getIntroductionDate());
+			Optional<Timestamp> disDate = BddMapper.optLocalDateToOptTimestamp(computer.getDiscontinuedDate());
 	        ps.setString(1, computer.getComputerName());
-	        ps.setDate(2, computer.getIntroductionDate().orElse(null));
-	        ps.setDate(3, computer.getDiscontinuedDate().orElse(null));
+	        ps.setTimestamp(2, introDate.orElse(null));
+	        ps.setTimestamp(3, disDate.orElse(null));
 	        ps.setInt(4, computer.getManufacturer().map(Company::getId).orElse(null));
 	        ps.setInt(5, computer.getId());
-	        int i = ps.executeUpdate();
-
-	      if(i == 1) {
-	        return true;
-	      }
-
+	        int result = ps.executeUpdate();
+	        if (result == 1) {
+	        	return true;
+	        }
 	    } catch (SQLException e) {
 	        LOGGER.error("Unable to update a computer in computer table",e);
 	    }
 	    return false;
 	}
 	
-	public boolean deleteComputer(int id) {
+	public int deleteComputer(int id) {
+		int result = 0;
 		try {
 	        Statement statement = db.connection.createStatement();
-	        int result = statement.executeUpdate(QUERY_DELETE + id);
-	        if(result == 1) {
-	            return true;
-	        }
-
+	        result = statement.executeUpdate(QUERY_DELETE + id);
 	    } catch (SQLException e) {
 	        LOGGER.error("Unable to delete a computer in computer table",e);
 	    }
-
-	    return false; 
+		return result;
 	}
 	
 	public int getComputerCount() {

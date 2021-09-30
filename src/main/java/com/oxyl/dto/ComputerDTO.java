@@ -1,6 +1,6 @@
 package com.oxyl.dto;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.oxyl.model.Company;
@@ -13,16 +13,30 @@ public class ComputerDTO {
 	private final String computerName;
 	private final String introductionDate;
 	private final String discontinuedDate;
-	private final String manufacturer;
+	private final Optional<String> manufacturerName;
+	private final Optional<String> manufacturerId;
 	
 	public ComputerDTO(Computer computer) {
+		Optional<String> manufacturerId = Optional.empty();
 		this.computerName = computer.getComputerName();
-		Optional<Date> introductionDate = computer.getIntroductionDate();
-		Optional<Date> discontinuedDate = computer.getDiscontinuedDate();
-		this.introductionDate = introductionDate.map(Date::toString).orElse("");
-		this.discontinuedDate = discontinuedDate.map(Date::toString).orElse("");
+		Optional<LocalDateTime> introductionDate = computer.getIntroductionDate();
+		Optional<LocalDateTime> discontinuedDate = computer.getDiscontinuedDate();
+		this.introductionDate = introductionDate.map(LocalDateTime::toString).orElse("");
+		this.discontinuedDate = discontinuedDate.map(LocalDateTime::toString).orElse("");
 		Company manufacturer = computer.getManufacturer().orElse(new Company());
-		this.manufacturer = manufacturer.getName();
+		this.manufacturerName = Optional.of(manufacturer.getName());
+		if (manufacturerName.get() != "") {
+			manufacturerId = Optional.of(manufacturer.getName());
+		} 
+		this.manufacturerId = manufacturerId;
+	}
+	
+	public ComputerDTO(String computerName, String introductionDate, String discontinuedDate, String manufacturerName, String manufacturerId) {
+		this.computerName = computerName;
+		this.introductionDate = introductionDate;
+		this.discontinuedDate = discontinuedDate;
+		this.manufacturerName = Optional.ofNullable(manufacturerName);
+		this.manufacturerId = Optional.ofNullable(manufacturerId);
 	}
 
 	public String getComputerName() {
@@ -37,7 +51,11 @@ public class ComputerDTO {
 		return discontinuedDate;
 	}
 
-	public String getManufacturer() {
-		return manufacturer;
+	public Optional<String> getManufacturer() {
+		return manufacturerName;
+	}
+	
+	public Optional<String> getId() {
+		return manufacturerId;
 	}
 }

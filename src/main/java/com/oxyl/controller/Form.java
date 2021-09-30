@@ -132,7 +132,7 @@ public class Form {
 			int id = getSecureComputerIdInput();
 			ComputerDAO computers = new ComputerDAO();
 			validId = true;
-			if(computers.deleteComputer(id)) {
+			if(computers.deleteComputer(id) == 1) {
 				LOGGER.info("L'ordinateur " + id + " a bien été supprimé.\n"); 
 			} else {
 				LOGGER.error("ID non valide. Aucun ordinateur n'a été supprimé");
