@@ -28,6 +28,10 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		this.pageIndex = 0;
 	}
 	
+	public void setPageChanged() {
+		this.pageChanged = true;
+	}
+	
 	private static int initNumberComputer() {
 		ComputerDAO computers = new ComputerDAO();
 		return computers.getComputerCount();

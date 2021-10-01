@@ -21,6 +21,6 @@ public class ComputerService {
 		ComputerDAO computers = new ComputerDAO();
 		int result = computers.deleteComputer(id);
 		int numberComputer = ComputerPageHandlerStrategyService.getNumberComputer();
-		ComputerPageHandlerStrategyService.setNumberComputer(numberComputer + result);
+		ComputerPageHandlerStrategyService.setNumberComputer(numberComputer - result);
 	}
 }
