@@ -9,7 +9,7 @@ import com.oxyl.model.Computer;
 
 
 public class ComputerDTO {
-	
+	private final String computerId;
 	private final String computerName;
 	private final String introductionDate;
 	private final String discontinuedDate;
@@ -19,6 +19,7 @@ public class ComputerDTO {
 	public ComputerDTO(Computer computer) {
 		Optional<String> manufacturerId = Optional.empty();
 		this.computerName = computer.getComputerName();
+		this.computerId = Integer.toString(computer.getId()).toString();
 		Optional<LocalDateTime> introductionDate = computer.getIntroductionDate();
 		Optional<LocalDateTime> discontinuedDate = computer.getDiscontinuedDate();
 		this.introductionDate = introductionDate.map(LocalDateTime::toString).orElse("");
@@ -31,14 +32,19 @@ public class ComputerDTO {
 		this.manufacturerId = manufacturerId;
 	}
 	
-	public ComputerDTO(String computerName, String introductionDate, String discontinuedDate, String manufacturerName, String manufacturerId) {
+	public ComputerDTO(String computerId, String computerName, String introductionDate, String discontinuedDate, String manufacturerName, String manufacturerId) {
+		this.computerId = computerId;
 		this.computerName = computerName;
 		this.introductionDate = introductionDate;
 		this.discontinuedDate = discontinuedDate;
 		this.manufacturerName = Optional.ofNullable(manufacturerName);
 		this.manufacturerId = Optional.ofNullable(manufacturerId);
 	}
-
+	
+	public String getComputerId() {
+		return computerId;
+	}
+	
 	public String getComputerName() {
 		return computerName;
 	}

@@ -44,23 +44,35 @@ public class ComputerMapper {
 		return dtoList;
 	}
 	
-	public static Computer computerDTOToComputerModel(ComputerDTO dto, List<Company> companies){
+	public static Computer computerDTOToComputerModel(ComputerDTO dtoComputer, List<Company> companies){
 		String name = "";
-		String companyId = "1";
+		String companyId = "";
 		Optional<LocalDateTime> localIntro = Optional.empty();
 		Optional<LocalDateTime> localDis = Optional.empty();
-		if(!ComputerValidator.checkComputer(dto,companies)) {
+		Optional <Integer> compId = Optional.empty();
+		if(!ComputerValidator.checkComputer(dtoComputer,companies)) {
 			return new Computer.ComputerBuilder("").build();
 		}
-		name = dto.getComputerName();
-		if(!"".equals(dto.getIntroductionDate())) {
-			localIntro = Optional.of(LocalDateTime.parse(dto.getIntroductionDate(),dtf));
+		name = dtoComputer.getComputerName();
+		if(!"-1".equals(dtoComputer.getComputerId()) ) {
+			compId = Optional.of(Integer.parseInt(dtoComputer.getComputerId()));
 		}
-		if(!"".equals(dto.getDiscontinuedDate())) {
-			localDis = Optional.of(LocalDateTime.parse(dto.getDiscontinuedDate(),dtf));
+		if(!"".equals(dtoComputer.getIntroductionDate())) {
+			localIntro = Optional.of(LocalDateTime.parse(dtoComputer.getIntroductionDate(),dtf));
 		}
-		if(dto.getId().isPresent()) {
-			companyId = dto.getId().get();
+		if(!"".equals(dtoComputer.getDiscontinuedDate())) {
+			localDis = Optional.of(LocalDateTime.parse(dtoComputer.getDiscontinuedDate(),dtf));
+		}
+		if(dtoComputer.getId().isPresent()) {
+			companyId = dtoComputer.getId().get();
+		}
+		if(!"-1".equals(dtoComputer.getComputerId())) {
+			return new Computer.ComputerBuilder(name)
+			           .id(compId.get())
+			           .manufacturer(Optional.ofNullable(companyIdToCompanyModel(companyId, companies)))
+			           .introductionDate(localIntro)
+			           .discontinuedDate(localDis)
+			           .build(); 
 		}
 		return new Computer.ComputerBuilder(name)
 				           .manufacturer(Optional.ofNullable(companyIdToCompanyModel(companyId, companies)))
@@ -76,6 +88,6 @@ public class ComputerMapper {
 			}
 		}
 		return new Company(0,"");
-	}
+	}	
 }
  

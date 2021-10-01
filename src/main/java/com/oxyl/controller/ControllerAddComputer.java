@@ -33,16 +33,22 @@ public class ControllerAddComputer extends HttpServlet {
 		super();
 	}
 	
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {	
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String computerId = "-1";
 		String computerName = req.getParameter("computerName");
 		String introductionDate = req.getParameter("introduced");
 		String discontinuedDate = req.getParameter("discontinued");
 		String manufacturerId = req.getParameter("companyId");
 		String manufacturerName = "";
-		if(computerName == null) {
+		if(computerName.equals(null) || 
+				   introductionDate.equals(null) ||
+				   discontinuedDate.equals(null) ||
+				   manufacturerId.equals(null) ||
+				   manufacturerName.equals(null) ||
+				   computerId.equals(null)) {
 			this.getServletContext().getRequestDispatcher("/WEB-INF/views/404.html").forward(req, resp);
 		}
-		ComputerDTO dto = new ComputerDTO(computerName,introductionDate,discontinuedDate,manufacturerName,manufacturerId);
+		ComputerDTO dto = new ComputerDTO(computerId, computerName,introductionDate,discontinuedDate,manufacturerName,manufacturerId);
 		System.out.println(dto.getComputerName());
 		Computer computer = ComputerMapper.computerDTOToComputerModel(dto,companies);
 		if("".equals(computer.getComputerName())) {
