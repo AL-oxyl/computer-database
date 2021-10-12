@@ -2,7 +2,7 @@ package com.oxyl.mapper;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+//import java.time.ZoneId;
 import java.util.Optional;
 
 public class BddMapper {
@@ -16,7 +16,7 @@ public class BddMapper {
 	
 	public static Optional<LocalDateTime> optTimestampToOptLocalDate (Optional<Timestamp> date) {
 		if(date.isPresent()) {
-			return Optional.of(date.get().toLocalDateTime().atZone(ZoneId.of("Europe/Paris")).toLocalDateTime());
+			return Optional.of(date.get().toLocalDateTime()); // .atZone(ZoneId.of("Europe/Paris")).toLocalDateTime()
 		} 
 		return Optional.empty();
 	}

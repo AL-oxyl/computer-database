@@ -1,6 +1,7 @@
 package com.oxyl.dto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import com.oxyl.model.Company;
@@ -13,7 +14,7 @@ public class ComputerDTO {
 	private final String computerName;
 	private final String introductionDate;
 	private final String discontinuedDate;
-	private final Optional<String> manufacturerName;
+	private final String manufacturerName;
 	private final Optional<String> manufacturerId;
 	
 	public ComputerDTO(Computer computer) {
@@ -22,14 +23,15 @@ public class ComputerDTO {
 		this.computerId = Integer.toString(computer.getId()).toString();
 		Optional<LocalDateTime> introductionDate = computer.getIntroductionDate();
 		Optional<LocalDateTime> discontinuedDate = computer.getDiscontinuedDate();
-		this.introductionDate = introductionDate.map(LocalDateTime::toString).orElse("");
-		this.discontinuedDate = discontinuedDate.map(LocalDateTime::toString).orElse("");
+		this.introductionDate = introductionDate.map(date->date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).orElse("");
+		this.discontinuedDate = discontinuedDate.map(date->date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).orElse("");
 		Company manufacturer = computer.getManufacturer().orElse(new Company());
-		this.manufacturerName = Optional.of(manufacturer.getName());
-		if (manufacturerName.get() != "") {
-			manufacturerId = Optional.of(manufacturer.getName());
-		} 
-		this.manufacturerId = manufacturerId;
+		this.manufacturerName = manufacturer.getName();
+		if(!"".equals(manufacturer.getName())) {
+			this.manufacturerId = Optional.of(Integer.toString(manufacturer.getId()));
+		} else {
+			this.manufacturerId = manufacturerId;
+		}
 	}
 	
 	public ComputerDTO(String computerId, String computerName, String introductionDate, String discontinuedDate, String manufacturerName, String manufacturerId) {
@@ -37,7 +39,7 @@ public class ComputerDTO {
 		this.computerName = computerName;
 		this.introductionDate = introductionDate;
 		this.discontinuedDate = discontinuedDate;
-		this.manufacturerName = Optional.ofNullable(manufacturerName);
+		this.manufacturerName = manufacturerName;
 		this.manufacturerId = Optional.ofNullable(manufacturerId);
 	}
 	
@@ -57,7 +59,7 @@ public class ComputerDTO {
 		return discontinuedDate;
 	}
 
-	public Optional<String> getManufacturer() {
+	public String getManufacturer() {
 		return manufacturerName;
 	}
 	

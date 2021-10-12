@@ -19,7 +19,7 @@ import com.oxyl.validator.ComputerValidator;
 public class ComputerMapper {
 	private static ComputerMapper instance;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerMapper.class);
-	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	
 	private ComputerMapper() {
 		LOGGER.info("Computer mapper instantiate");

@@ -86,7 +86,7 @@ public class ComputerValidator {
 	public static boolean checkComputer(ComputerDTO dto, List<Company> companies) {
 		if (!checkValidDate(dto.getIntroductionDate(), dto.getDiscontinuedDate()) || 
 			!checkName(dto.getComputerName())|| 
-			!checkValidManufacturer(dto.getManufacturer(), companies)) {
+			!checkValidManufacturer(dto.getId(), companies)) {
 			return false;
 		}
 		return true;
