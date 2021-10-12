@@ -11,6 +11,7 @@ import com.oxyl.mapper.ComputerMapper;
 import com.oxyl.model.Computer;
 import com.oxyl.service.ComputerPageHandlerStrategyService;
 import com.oxyl.service.ComputerService;
+import com.oxyl.service.State;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,6 +57,14 @@ public class ControllerComputer extends HttpServlet {
 				this.getServletContext().getRequestDispatcher("/WEB-INF/views/404.html").forward(req, resp);
 			}
 		}
+		if(req.getParameter("search") != null) {
+			this.computerPaginationService.setSearchedEntry(req.getParameter("search"));
+			this.computerPaginationService.changeState(State.SEARCH);
+		}
+		if(req.getParameter("search") == null && "1".equals(req.getParameter("page"))) {
+			this.computerPaginationService.setSearchedEntry("");
+			this.computerPaginationService.changeState(State.NORMAL);
+		}
 		if(isValid) {
 			handleRequest(req,resp);
 		}
@@ -99,8 +108,8 @@ public class ControllerComputer extends HttpServlet {
 		req.setAttribute("pages", computerPaginationService.getButtonArray());
 		req.setAttribute("testLeft", !computerPaginationService.testLeft());
 		req.setAttribute("testRight", !computerPaginationService.testRight());
-		req.setAttribute("numberComputer", ComputerPageHandlerStrategyService.getNumberComputer());
-		req.setAttribute("numberPage", ComputerPageHandlerStrategyService.getNumberPage());
+		req.setAttribute("numberComputer", computerPaginationService.getLocalNumberComputer());
+		req.setAttribute("numberPage", computerPaginationService.getLocalNumberPage());
 		req.setAttribute("computerList", ComputerMapper.computerListToDTOList(computerList));
 		this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(req, resp);
 	}

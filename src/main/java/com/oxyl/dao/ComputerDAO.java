@@ -19,13 +19,19 @@ import com.oxyl.persistence.DatabaseConnection;
 
 public class ComputerDAO implements ComputerDao {
 	public static final short NUMBER_RESULT_BY_PAGE = 10;
-	private static final String QUERY_SELECT = "select id,name,introduced,discontinued,company_id from computer";
-	private static final String QUERY_GET = "select id,name,introduced,discontinued,company_id from computer where id=";
+	private static final String QUERY_SELECT = "select computer.id,computer.name,computer.introduced,computer.discontinued,computer.company_id from computer";
+	private static final String QUERY_GET = QUERY_SELECT + "where id=";
 	private static final String QUERY_INSERT = "insert INTO computer VALUES (NULL, ?, ?, ?, ?)";
 	private static final String QUERY_UPDATE = "update computer SET name=?, introduced=?, discontinued=?, company_id=? where id=?";
 	private static final String QUERY_DELETE = "delete from computer where id=";
-	private static final String QUERY_GET_RANGE = "select id,name,introduced,discontinued,company_id from computer limit ?,"+Short.toString(NUMBER_RESULT_BY_PAGE);
-	private static final String QUERY_COUNT = "select count(id) from computer";
+	private static final String RANGE = " limit ?,"+Short.toString(NUMBER_RESULT_BY_PAGE);
+	private static final String QUERY_GET_RANGE = QUERY_SELECT + RANGE;
+	private static final String QUERY_COUNT = "select count(computer.id) from computer";
+	private static final String LEFT_JOIN_COMPUTER_COMPANY = " LEFT JOIN company ON computer.company_id = company.id";
+	private static final String WHERE_COMPUTER_NAME = " where computer.name LIKE ?";
+	private static final String WHERE_COMPANY_NAME = "company.name LIKE ?";
+	private static final String QUERY_SEARCH_GET_RANGE = QUERY_SELECT + LEFT_JOIN_COMPUTER_COMPANY + WHERE_COMPUTER_NAME + " or " + WHERE_COMPANY_NAME + RANGE;
+	private static final String QUERY_COUNT_SEARCH = QUERY_COUNT + LEFT_JOIN_COMPUTER_COMPANY + WHERE_COMPUTER_NAME + " or " + WHERE_COMPANY_NAME;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerDAO.class);
 
 	private DatabaseConnection db;
@@ -67,6 +73,26 @@ public class ComputerDAO implements ComputerDao {
 			LOGGER.error("Unable to query all in computer table",e);
 		}
 		return companyList;
+	}
+	
+	public ArrayList<Computer> getSearchedComputerRange(int pageNumber, String searchedName) {
+		ArrayList<Computer> computerRange = new ArrayList<Computer>();
+		try {
+			
+	        PreparedStatement ps = db.connection.prepareStatement(QUERY_SEARCH_GET_RANGE);
+	        ps.setString(1,"%"+searchedName+"%");
+	        ps.setString(2,"%"+searchedName+"%");
+	        ps.setInt(3,pageNumber*NUMBER_RESULT_BY_PAGE);
+	        LOGGER.info(ps.toString());
+	        ResultSet rs = ps.executeQuery();
+	        while(rs.next()) {
+	        	computerRange.add(extractComputer(rs));
+	        }
+	        return computerRange;
+		} catch (SQLException e) {
+			LOGGER.error("Unable to query a range in computer table",e);
+		}
+		return computerRange;
 	}
 	
 	public ArrayList<Computer> getComputerRange(int pageNumber) {
@@ -140,6 +166,21 @@ public class ComputerDAO implements ComputerDao {
 	public int getComputerCount() {
 		try {
 			PreparedStatement ps = db.connection.prepareStatement(QUERY_COUNT);
+			ResultSet rs = ps.executeQuery();
+	        if(rs.next()) {
+	        	return rs.getInt(1);
+	        }
+	    } catch (SQLException e) {
+	        LOGGER.error("Unable to get the computer count in computer table",e);
+	    }
+	    return 0; 
+	}
+	
+	public int getComputerCountSearch(String searchedName) {
+		try {
+			PreparedStatement ps = db.connection.prepareStatement(QUERY_COUNT_SEARCH);
+			ps.setString(1,"%"+searchedName+"%");
+	        ps.setString(2,"%"+searchedName+"%");
 			ResultSet rs = ps.executeQuery();
 	        if(rs.next()) {
 	        	return rs.getInt(1);

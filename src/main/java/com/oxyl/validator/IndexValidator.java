@@ -19,4 +19,15 @@ public class IndexValidator {
 		}
 		return false;
 	}
+	
+	public static boolean localIndexValidator(ComputerPageHandlerStrategyService pagination, int index) {
+		if(index < 0) {
+			LOGGER.error("Index négatif interdit");
+		} else if (index >= pagination.getLocalNumberPage()) {
+			LOGGER.error("Index supérieur au nombre de page total");
+		} else {
+			return true;
+		}
+		return false;
+	}
 }
