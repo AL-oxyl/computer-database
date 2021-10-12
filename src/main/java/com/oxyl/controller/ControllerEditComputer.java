@@ -1,6 +1,7 @@
 package com.oxyl.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -18,6 +19,7 @@ import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.service.CompanyService;
 import com.oxyl.service.ComputerService;
+import com.oxyl.service.State;
 import com.oxyl.validator.ComputerValidator;
 
 @WebServlet("/edit")
@@ -56,7 +58,7 @@ public class ControllerEditComputer extends HttpServlet {
 				this.getServletContext().getRequestDispatcher(VIEW_404).forward(req, resp);
 			} else {
 				ComputerService.updateComputer(computer);
-				this.getServletContext().getRequestDispatcher(VIEW_DASHBOARD).forward(req, resp);
+				resp.sendRedirect("dashboard?page=1");
 			}	
 		}
 	}

@@ -27,6 +27,7 @@ public class ControllerComputer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private ComputerPageHandlerStrategyService computerPaginationService;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ControllerComputer.class);
+	private final String ERROR404 = "/WEB-INF/views/404.html";
 
 	public ControllerComputer() {
 		super();
@@ -38,7 +39,7 @@ public class ControllerComputer extends HttpServlet {
 		if(req.getParameter("selection") != null) {
 			isValid = deleteSelection(req);
 			if(!isValid) {
-				this.getServletContext().getRequestDispatcher("/WEB-INF/views/404.html").forward(req, resp);
+				this.getServletContext().getRequestDispatcher(ERROR404).forward(req, resp);
 			}
 		}
 		if(isValid) {
@@ -54,12 +55,15 @@ public class ControllerComputer extends HttpServlet {
 		if (req.getParameter("page") != null) {
 			isValid = updatePage(req);
 			if(!isValid) {
-				this.getServletContext().getRequestDispatcher("/WEB-INF/views/404.html").forward(req, resp);
+				this.getServletContext().getRequestDispatcher(ERROR404).forward(req, resp);
 			}
 		}
 		if(req.getParameter("search") != null) {
 			this.computerPaginationService.setSearchedEntry(req.getParameter("search"));
 			this.computerPaginationService.changeState(State.SEARCH);
+			if(req.getParameter("page") == null) {
+				this.computerPaginationService.setLocalPageIndex(0);
+			}
 		}
 		if(req.getParameter("search") == null && "1".equals(req.getParameter("page"))) {
 			this.computerPaginationService.setSearchedEntry("");
@@ -111,6 +115,7 @@ public class ControllerComputer extends HttpServlet {
 		req.setAttribute("numberComputer", computerPaginationService.getLocalNumberComputer());
 		req.setAttribute("numberPage", computerPaginationService.getLocalNumberPage());
 		req.setAttribute("computerList", ComputerMapper.computerListToDTOList(computerList));
+		req.setAttribute("testNumber", computerPaginationService.getLocalNumberComputer()>1);
 		this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(req, resp);
 	}
 }
