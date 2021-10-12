@@ -1,12 +1,12 @@
 package com.oxyl.model;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public class Computer {
 	private final Integer id;
 	private final String computerName;
-	private final Optional<LocalDateTime> introductionDate;
-	private final Optional<LocalDateTime> discontinuedDate;
+	private final Optional<LocalDate> introductionDate;
+	private final Optional<LocalDate> discontinuedDate;
 	private final Optional<Company> manufacturer;
 	
 	public Computer(ComputerBuilder builder) {
@@ -22,11 +22,11 @@ public class Computer {
 		return computerName;
 	}
 	
-	public Optional<LocalDateTime> getIntroductionDate() {
+	public Optional<LocalDate> getIntroductionDate() {
 		return introductionDate;
 	}
 
-	public Optional<LocalDateTime> getDiscontinuedDate() {
+	public Optional<LocalDate> getDiscontinuedDate() {
 		return discontinuedDate;
 	}
 
@@ -48,8 +48,8 @@ public class Computer {
 	public static class ComputerBuilder {
 		private final String computerName;
 		private Integer id;
-		private Optional<LocalDateTime> introductionDate;
-		private Optional<LocalDateTime> discontinuedDate;
+		private Optional<LocalDate> introductionDate;
+		private Optional<LocalDate> discontinuedDate;
 		private Optional<Company> manufacturer;
 		
 		public ComputerBuilder(String name) {
@@ -61,12 +61,12 @@ public class Computer {
 			return this;
 		}
 		
-		public ComputerBuilder introductionDate(Optional<LocalDateTime> date) {
+		public ComputerBuilder introductionDate(Optional<LocalDate> date) {
 			this.introductionDate = date;
 			return this;
 		}
 		
-		public ComputerBuilder discontinuedDate(Optional<LocalDateTime> date) {
+		public ComputerBuilder discontinuedDate(Optional<LocalDate> date) {
 			this.discontinuedDate = date;
 			return this;
 		}

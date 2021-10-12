@@ -1,6 +1,6 @@
 package com.oxyl.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
@@ -21,8 +21,8 @@ public class ComputerDTO {
 		Optional<String> manufacturerId = Optional.empty();
 		this.computerName = computer.getComputerName();
 		this.computerId = Integer.toString(computer.getId()).toString();
-		Optional<LocalDateTime> introductionDate = computer.getIntroductionDate();
-		Optional<LocalDateTime> discontinuedDate = computer.getDiscontinuedDate();
+		Optional<LocalDate> introductionDate = computer.getIntroductionDate();
+		Optional<LocalDate> discontinuedDate = computer.getDiscontinuedDate();
 		this.introductionDate = introductionDate.map(date->date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).orElse("");
 		this.discontinuedDate = discontinuedDate.map(date->date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).orElse("");
 		Company manufacturer = computer.getManufacturer().orElse(new Company());

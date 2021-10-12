@@ -18,6 +18,7 @@ import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.service.CompanyService;
 import com.oxyl.service.ComputerService;
+import com.oxyl.validator.ComputerValidator;
 
 @WebServlet("/edit")
 public class ControllerEditComputer extends HttpServlet {
@@ -40,12 +41,7 @@ public class ControllerEditComputer extends HttpServlet {
 		String manufacturerId = req.getParameter("companyId");
 		String manufacturerName = "";
 		
-		if(computerId == null || 
-		   introductionDate == null ||
-		   discontinuedDate == null ||
-		   manufacturerId == null ||
-		   manufacturerName == null ||
-		   computerName == null) {
+		if(ComputerValidator.checkNullableEntry(computerId, computerName,introductionDate,discontinuedDate,manufacturerId)) {
 			LOGGER.info("Etat introductionDate :" +  introductionDate);
 			LOGGER.info("Etat discontinuedDate :" +  discontinuedDate);
 			LOGGER.info("Etat manufacturerId :" +  manufacturerId);

@@ -1,6 +1,6 @@
 package com.oxyl.validator;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -14,8 +14,16 @@ import com.oxyl.model.Company;
 
 public class ComputerValidator {
 
-	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
+	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerValidator.class);
+	
+	public static boolean checkNullableEntry(String computerId, String computerName, String introductionDate, String discontinuedDate, String manufacturerId) {
+		return computerId == null ||
+			   computerName == null ||
+			   introductionDate	== null ||
+			   discontinuedDate == null ||
+			   manufacturerId == null;
+	}
 
 	public static boolean checkName(String name) {
 		if (name.length() < 255 & name.length() > 0) {
@@ -24,9 +32,9 @@ public class ComputerValidator {
 		return false;
 	}
 
-	public static Optional<LocalDateTime> checkOnceDate(String introDate) throws NullPointerException {
+	public static Optional<LocalDate> checkOnceDate(String introDate) throws NullPointerException {
 		try {
-			return Optional.of(LocalDateTime.parse(introDate, dtf));
+			return Optional.of(LocalDate.parse(introDate, dtf));
 
 		} catch (DateTimeParseException e) {
 			LOGGER.error("Unable to parse date:" + introDate);
@@ -62,9 +70,9 @@ public class ComputerValidator {
 	}
 
 	public static boolean checkDate(String introDate, String disDate) {
-		Optional<LocalDateTime> intro = checkOnceDate(introDate);
+		Optional<LocalDate> intro = checkOnceDate(introDate);
 		if (intro.isPresent()) {
-			Optional<LocalDateTime> dis = checkOnceDate(disDate);
+			Optional<LocalDate> dis = checkOnceDate(disDate);
 			if (dis.isPresent()) {
 				return intro.get().isBefore(dis.get());
 			}

@@ -1,10 +1,7 @@
 package com.oxyl.controller;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,6 +18,7 @@ import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.service.CompanyService;
 import com.oxyl.service.ComputerService;
+import com.oxyl.validator.ComputerValidator;
 
 @WebServlet("/add")
 public class ControllerAddComputer extends HttpServlet {
@@ -40,12 +38,8 @@ public class ControllerAddComputer extends HttpServlet {
 		String discontinuedDate = req.getParameter("discontinued");
 		String manufacturerId = req.getParameter("companyId");
 		String manufacturerName = "";
-		if(computerName.equals(null) || 
-				   introductionDate.equals(null) ||
-				   discontinuedDate.equals(null) ||
-				   manufacturerId.equals(null) ||
-				   manufacturerName.equals(null) ||
-				   computerId.equals(null)) {
+		
+		if(ComputerValidator.checkNullableEntry(computerId, computerName,introductionDate,discontinuedDate,manufacturerId)) {
 			this.getServletContext().getRequestDispatcher("/WEB-INF/views/404.html").forward(req, resp);
 		}
 		ComputerDTO dto = new ComputerDTO(computerId, computerName,introductionDate,discontinuedDate,manufacturerName,manufacturerId);

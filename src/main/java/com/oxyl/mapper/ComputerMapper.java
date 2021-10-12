@@ -1,7 +1,7 @@
 package com.oxyl.mapper;
 
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import com.oxyl.validator.ComputerValidator;
 public class ComputerMapper {
 	private static ComputerMapper instance;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerMapper.class);
-	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 	
 	private ComputerMapper() {
 		LOGGER.info("Computer mapper instantiate");
@@ -47,8 +47,8 @@ public class ComputerMapper {
 	public static Computer computerDTOToComputerModel(ComputerDTO dtoComputer, List<Company> companies){
 		String name = "";
 		String companyId = "";
-		Optional<LocalDateTime> localIntro = Optional.empty();
-		Optional<LocalDateTime> localDis = Optional.empty();
+		Optional<LocalDate> localIntro = Optional.empty();
+		Optional<LocalDate> localDis = Optional.empty();
 		Optional <Integer> compId = Optional.empty();
 		if(!ComputerValidator.checkComputer(dtoComputer,companies)) {
 			return new Computer.ComputerBuilder("").build();
@@ -58,10 +58,10 @@ public class ComputerMapper {
 			compId = Optional.of(Integer.parseInt(dtoComputer.getComputerId()));
 		}
 		if(!"".equals(dtoComputer.getIntroductionDate())) {
-			localIntro = Optional.of(LocalDateTime.parse(dtoComputer.getIntroductionDate(),dtf));
+			localIntro = Optional.of(LocalDate.parse(dtoComputer.getIntroductionDate(),dtf));
 		}
 		if(!"".equals(dtoComputer.getDiscontinuedDate())) {
-			localDis = Optional.of(LocalDateTime.parse(dtoComputer.getDiscontinuedDate(),dtf));
+			localDis = Optional.of(LocalDate.parse(dtoComputer.getDiscontinuedDate(),dtf));
 		}
 		if(dtoComputer.getId().isPresent()) {
 			companyId = dtoComputer.getId().get();
