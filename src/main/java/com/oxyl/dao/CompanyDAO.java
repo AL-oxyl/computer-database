@@ -1,5 +1,6 @@
 package com.oxyl.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
+import com.oxyl.persistence.DataSource;
 import com.oxyl.persistence.DatabaseConnection;
 
 public class CompanyDAO {
@@ -21,7 +23,8 @@ public class CompanyDAO {
 	 */
 	private static CompanyDAO instance;
 	public ArrayList<Company> companyList;
-	private DatabaseConnection db;
+	//private DatabaseConnection db;
+	private DataSource dsConnection;
 	public static final short NUMBER_RESULT_BY_PAGE = 10;
 	private static final String QUERY_ALL = "select id,name from company";
 	private static final String QUERY_GET_BY_ID = "select id,name from company where id=";
@@ -35,9 +38,9 @@ public class CompanyDAO {
 		/**
 		 * @param DatabaseConnection
 		 */
-		try {
-			this.db = DatabaseConnection.getInstance();
-			Statement statement = db.connection.createStatement();
+		this.dsConnection = DataSource.getInstance();
+		try(Connection connection = dsConnection.getConnection();
+			Statement statement = connection.createStatement();	) {
 			ResultSet rs = statement.executeQuery(QUERY_ALL);
 			ArrayList<Company> companyList = new ArrayList<Company>(); 
 			while(rs.next()) {
@@ -62,8 +65,8 @@ public class CompanyDAO {
 	}
 	
 	public Optional<Company> getCompany(int id) {
-		try {
-	        Statement statement = db.connection.createStatement();
+		try(Connection connection = dsConnection.getConnection();
+			Statement statement = connection.createStatement();	) {
 	        ResultSet rs = statement.executeQuery(QUERY_GET_BY_ID + id);
 	        if(rs.next()) {
 	            return Optional.of(extractCompany(rs));
@@ -76,8 +79,9 @@ public class CompanyDAO {
 	}
 	
 	public Optional<Company> getCompany(String name) {
-		try {
-	        PreparedStatement ps = db.connection.prepareStatement(QUERY_GET_BY_NAME);
+		try(Connection connection = dsConnection.getConnection();
+			PreparedStatement ps = connection.prepareStatement(QUERY_GET_BY_NAME);	) {
+	        
 	        ps.setString(1,name);
 	        ResultSet rs = ps.executeQuery();
 	        if(rs.next()) {
@@ -96,8 +100,8 @@ public class CompanyDAO {
 	
 	public ArrayList<Company> getCompanyRange(int pageNumber) {
 		ArrayList<Company> companyRange = new ArrayList<Company>();
-		try {
-	        PreparedStatement ps = db.connection.prepareStatement(QUERY_GET_RANGE);
+		try(Connection connection = dsConnection.getConnection();
+			PreparedStatement ps = connection.prepareStatement(QUERY_GET_RANGE);) {
 	        ps.setInt(1,pageNumber*NUMBER_RESULT_BY_PAGE);
 	        ResultSet rs = ps.executeQuery();
 	        while(rs.next()) {
@@ -110,8 +114,8 @@ public class CompanyDAO {
 	}
 	
 	public int getCompanyCount() {
-		try {
-			PreparedStatement ps = db.connection.prepareStatement(QUERY_COUNT);
+		try(Connection connection = dsConnection.getConnection();
+			PreparedStatement ps = connection.prepareStatement(QUERY_COUNT);) {
 			ResultSet rs = ps.executeQuery();
 	        if(rs.next()) {
 	        	return rs.getInt(1);
@@ -124,9 +128,9 @@ public class CompanyDAO {
 	
 	public List<Company> getAllCompanies() {
 		List<Company> companyList = new ArrayList<Company>(); 
-		try {
-			Statement test = db.connection.createStatement();
-			ResultSet rs = test.executeQuery(QUERY_ALL);
+		try(Connection connection = dsConnection.getConnection();
+			Statement statement = connection.createStatement();	) {
+			ResultSet rs = statement.executeQuery(QUERY_ALL);
 			while(rs.next()) {
 				companyList.add(extractCompany(rs));
 			}
