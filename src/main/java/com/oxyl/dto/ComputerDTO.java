@@ -63,7 +63,7 @@ public class ComputerDTO {
 		return manufacturerName;
 	}
 	
-	public Optional<String> getId() {
+	public Optional<String> getCompanyId() {
 		return manufacturerId;
 	}
 }

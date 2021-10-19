@@ -1,6 +1,5 @@
 package com.oxyl.controller;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
@@ -8,6 +7,8 @@ import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import com.oxyl.dao.ComputerDAO;
 import com.oxyl.model.Computer;
@@ -18,15 +19,16 @@ import com.oxyl.ui.Menu;
 import com.oxyl.ui.PageCompany;
 import com.oxyl.ui.PageComputer;
 
-
-
+@Controller
 public class Form {
 	
 	private int firstMenuEntry;
 	private int secondMenuEntry;
 	private final HashSet<Integer> validFirstMenuValues = new HashSet<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6, 7));
 	private final HashSet<Integer> validSecondMenuValues = new HashSet<Integer>(Arrays.asList(1, 2, 3));
+	@Autowired
 	private ComputerPageHandlerStrategyService computerPageHandler;
+	@Autowired
 	private CompanyPageHandlerStrategyService companyPageHandler;
 	private Scanner scan;
 	private boolean continueMenu;
@@ -130,7 +132,7 @@ public class Form {
 		while(!validId) {
 			System.out.print("Entrez l'id de l'ordinateur souhaité : ");
 			int id = getSecureComputerIdInput();
-			ComputerDAO computers = new ComputerDAO();
+			ComputerDAO computers = ComputerDAO.getInstance();
 			validId = true;
 			if(computers.deleteComputer(id) == 1) {
 				LOGGER.info("L'ordinateur " + id + " a bien été supprimé.\n"); 
@@ -257,13 +259,10 @@ public class Form {
 		while(!validEntry) {
 			if (scan.hasNextInt()) {
 				value = scan.nextInt();
-				try {
-					ComputerDAO computers = new ComputerDAO();
+
+					ComputerDAO computers = ComputerDAO.getInstance();
 					Optional<Computer> computer = computers.getComputer(value);	
-					return computer;
-				} catch (SQLException e){
-					LOGGER.error("ID non valide, merci de réessayer");
-				}	
+					return computer;	
 			} else {
 				LOGGER.error("\nCeci n'est pas un entier, merci de rentrer un entier\n");
 			}

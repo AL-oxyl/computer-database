@@ -26,19 +26,19 @@
                     <h1>Edit Computer</h1>
 
                     <form action="edit" method="POST">
-                        <input type="hidden" value="${computerId}" id="computerId" name = "computerId"/> <!-- TODO: Change this value with the computer id -->
+                        <input type="hidden" value="${computer.computerId}" id="computerId" name = "computerId"/> <!-- TODO: Change this value with the computer id -->
                         <fieldset>
                             <div class="form-group">
                                 <label for="computerName">Computer name</label>
-                                <input type="text" class="form-control" id="computerName" placeholder="" name="computerName">
+                                <input type="text" value="${computer.computerName}" class="form-control" id="computerName" placeholder="" name="computerName">
                             </div>
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label>
-                                <input type="date" class="form-control" id="introduced" placeholder="dd-mm-yyyy" name="introduced">
+                                <input type="date" value="${computer.introductionDate}" class="form-control" id="introduced" placeholder="dd-mm-yyyy" name="introduced">
                             </div>
                             <div class="form-group">
                                 <label for="discontinued">Discontinued date</label>
-                                <input type="date" class="form-control" id="discontinued" placeholder="dd-mm-yyyy" name ="discontinued">
+                                <input type="date" value="${computer.discontinuedDate}" class="form-control" id="discontinued" placeholder="dd-mm-yyyy" name ="discontinued">
                             </div>
                             <div class="form-group">
                                 <label for="companyId">Company</label>

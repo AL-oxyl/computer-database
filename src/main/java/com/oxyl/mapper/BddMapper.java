@@ -1,10 +1,15 @@
 package com.oxyl.mapper;
 
 import java.sql.Timestamp;
+
+
 import java.time.LocalDate;
 //import java.time.ZoneId;
 import java.util.Optional;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class BddMapper {
 	
 	public static Optional<Timestamp> optLocalDateToOptTimestamp(Optional<LocalDate> date) {

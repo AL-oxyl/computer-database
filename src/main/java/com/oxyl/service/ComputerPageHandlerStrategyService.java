@@ -4,12 +4,16 @@ import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import com.oxyl.dao.ComputerDAO;
 import com.oxyl.model.Computer;
 import com.oxyl.ui.Pagination;
 import com.oxyl.validator.IndexValidator;
 
+@Service
+@Scope("prototype")
 public class ComputerPageHandlerStrategyService implements GenericPageHandler<Computer>{
 		
 	
@@ -27,7 +31,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	private String searchedEntry = "";
 	
 	public ComputerPageHandlerStrategyService() {
-		ComputerDAO computers = new ComputerDAO();
+		ComputerDAO computers = ComputerDAO.getInstance();		
 		this.computerPageList = computers.getComputerRange(0);
 		this.pageIndex = 0;
 		this.state = State.NORMAL;
@@ -39,7 +43,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 	
 	private static int initNumberComputer() {
-		ComputerDAO computers = new ComputerDAO();
+		ComputerDAO computers = ComputerDAO.getInstance();
 		return computers.getComputerCount();
 	}
 	
@@ -86,7 +90,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 	
 	public void changeState(State state) {
-		ComputerDAO computers = new ComputerDAO();
+		ComputerDAO computers = ComputerDAO.getInstance();
 		this.state = state;
 		if(state==State.SEARCH || state==State.ORDERBYSEARCH) {
 			this.localNumberComputer = computers.getComputerCountSearch(searchedEntry);
@@ -161,7 +165,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 
 	public ArrayList<Computer> getComputerPageList() {
 		if (pageChanged) {
-			ComputerDAO computers = new ComputerDAO();
+			ComputerDAO computers = ComputerDAO.getInstance();
 			switch(this.state) {
 				case NORMAL:
 					this.computerPageList = computers.getComputerRange(pageIndex);
@@ -195,7 +199,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 	
 	public void updateInfo(int entry) {
-		ComputerDAO computers = new ComputerDAO();
+		ComputerDAO computers = ComputerDAO.getInstance();
 		int ref = pageIndex;
 		setPageIndex(entry);
 		if(ref != pageIndex) {

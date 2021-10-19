@@ -2,9 +2,11 @@ package com.oxyl.validator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.oxyl.service.ComputerPageHandlerStrategyService;
 
+@Component
 public class IndexValidator {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(IndexValidator.class);

@@ -15,8 +15,11 @@ import org.slf4j.LoggerFactory;
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.persistence.DataSource;
-import com.oxyl.persistence.DatabaseConnection;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Repository;
 
+
+@Repository
 public class CompanyDAO {
 	/**
 	 * This is the class that contains all companies. It follows Singleton pattern.
@@ -66,7 +69,7 @@ public class CompanyDAO {
 	
 	public Optional<Company> getCompany(int id) {
 		try(Connection connection = dsConnection.getConnection();
-			Statement statement = connection.createStatement();	) {
+			Statement statement = connection.createStatement()) {
 	        ResultSet rs = statement.executeQuery(QUERY_GET_BY_ID + id);
 	        if(rs.next()) {
 	            return Optional.of(extractCompany(rs));
@@ -80,7 +83,7 @@ public class CompanyDAO {
 	
 	public Optional<Company> getCompany(String name) {
 		try(Connection connection = dsConnection.getConnection();
-			PreparedStatement ps = connection.prepareStatement(QUERY_GET_BY_NAME);	) {
+			PreparedStatement ps = connection.prepareStatement(QUERY_GET_BY_NAME)) {
 	        
 	        ps.setString(1,name);
 	        ResultSet rs = ps.executeQuery();
@@ -101,7 +104,7 @@ public class CompanyDAO {
 	public ArrayList<Company> getCompanyRange(int pageNumber) {
 		ArrayList<Company> companyRange = new ArrayList<Company>();
 		try(Connection connection = dsConnection.getConnection();
-			PreparedStatement ps = connection.prepareStatement(QUERY_GET_RANGE);) {
+			PreparedStatement ps = connection.prepareStatement(QUERY_GET_RANGE)) {
 	        ps.setInt(1,pageNumber*NUMBER_RESULT_BY_PAGE);
 	        ResultSet rs = ps.executeQuery();
 	        while(rs.next()) {
@@ -115,7 +118,7 @@ public class CompanyDAO {
 	
 	public int getCompanyCount() {
 		try(Connection connection = dsConnection.getConnection();
-			PreparedStatement ps = connection.prepareStatement(QUERY_COUNT);) {
+			PreparedStatement ps = connection.prepareStatement(QUERY_COUNT)) {
 			ResultSet rs = ps.executeQuery();
 	        if(rs.next()) {
 	        	return rs.getInt(1);
@@ -129,7 +132,7 @@ public class CompanyDAO {
 	public List<Company> getAllCompanies() {
 		List<Company> companyList = new ArrayList<Company>(); 
 		try(Connection connection = dsConnection.getConnection();
-			Statement statement = connection.createStatement();	) {
+			Statement statement = connection.createStatement()) {
 			ResultSet rs = statement.executeQuery(QUERY_ALL);
 			while(rs.next()) {
 				companyList.add(extractCompany(rs));

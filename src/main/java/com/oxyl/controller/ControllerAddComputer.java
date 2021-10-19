@@ -1,8 +1,11 @@
 package com.oxyl.controller;
 
 import java.io.IOException;
-import java.util.List;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.oxyl.dto.ComputerDTO;
 import com.oxyl.mapper.ComputerMapper;
@@ -20,6 +25,7 @@ import com.oxyl.service.CompanyService;
 import com.oxyl.service.ComputerService;
 import com.oxyl.validator.ComputerValidator;
 
+@Controller
 @WebServlet("/add")
 public class ControllerAddComputer extends HttpServlet {
 	
@@ -30,8 +36,10 @@ public class ControllerAddComputer extends HttpServlet {
 	private final String ADD = "/WEB-INF/views/addComputer.jsp";
 
 
-	public ControllerAddComputer() {
-		super();
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,config.getServletContext());
+		super.init(config);
 	}
 	
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -46,14 +54,13 @@ public class ControllerAddComputer extends HttpServlet {
 			this.getServletContext().getRequestDispatcher(ERROR404).forward(req, resp);
 		}
 		ComputerDTO dto = new ComputerDTO(computerId, computerName,introductionDate,discontinuedDate,manufacturerName,manufacturerId);
-		System.out.println(dto.getComputerName());
-		Computer computer = ComputerMapper.computerDTOToComputerModel(dto,companies);
-		if("".equals(computer.getComputerName())) {
-			this.getServletContext().getRequestDispatcher(ERROR404).forward(req, resp);
-		} else {
+		Map<String, String> exceptionsMap = ComputerValidator.checkComputer(dto,companies);
+		if(exceptionsMap.isEmpty()) {
+			Computer computer = ComputerMapper.computerDTOToComputerModel(dto,companies);
 			ComputerService.addComputer(computer);
-			this.getServletContext().getRequestDispatcher(ADD).forward(req, resp);
 		}
+		req.setAttribute("mapException",exceptionsMap);
+		this.getServletContext().getRequestDispatcher(ADD).forward(req, resp);
 	}
 	
 	protected void doGet(HttpServletRequest req ,HttpServletResponse resp) throws ServletException, IOException {

@@ -1,10 +1,13 @@
 package com.oxyl.ui;
 import java.util.ArrayList;
 
+import org.springframework.stereotype.Component;
+
 import com.oxyl.dto.ComputerDTO;
 import com.oxyl.mapper.ComputerMapper;
 import com.oxyl.model.Computer;
 
+@Component
 public class PageComputer {
 	
 	ArrayList<ComputerDTO> currentComputerListOnPage;

@@ -1,4 +1,4 @@
-package com.oxyl.persistence;
+/**package com.oxyl.persistence;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -40,5 +40,5 @@ public class DatabaseConnection {
 		}
 		
 	}
-}
+}**/
 	

@@ -1,6 +1,7 @@
 package com.oxyl.dao;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,8 +18,12 @@ import com.oxyl.mapper.BddMapper;
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.persistence.DataSource;
-import com.oxyl.persistence.DatabaseConnection;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Repository;
+
+
+@Repository
 public class ComputerDAO implements ComputerDao {
 	public static final short NUMBER_RESULT_BY_PAGE = 10;
 	private static final String QUERY_SELECT = "select computer.id,computer.name,computer.introduced,computer.discontinued,computer.company_id from computer";
@@ -32,36 +37,55 @@ public class ComputerDAO implements ComputerDao {
 	private static final String LEFT_JOIN_COMPUTER_COMPANY = " LEFT JOIN company ON computer.company_id = company.id";
 	private static final String WHERE_COMPUTER_NAME = " where computer.name LIKE ?";
 	private static final String WHERE_COMPANY_NAME = "company.name LIKE ?";
-	private static final String QUERY_SEARCH_GET_RANGE = QUERY_SELECT + LEFT_JOIN_COMPUTER_COMPANY + WHERE_COMPUTER_NAME + " or " + WHERE_COMPANY_NAME + RANGE;
-	private static final String QUERY_COUNT_SEARCH = QUERY_COUNT + LEFT_JOIN_COMPUTER_COMPANY + WHERE_COMPUTER_NAME + " or " + WHERE_COMPANY_NAME;
+	private static final String QUERY_SEARCH_GET_RANGE = QUERY_SELECT 
+														+ LEFT_JOIN_COMPUTER_COMPANY 
+														+ WHERE_COMPUTER_NAME 
+														+ " or " + WHERE_COMPANY_NAME 
+														+ RANGE;
+	private static final String QUERY_COUNT_SEARCH = QUERY_COUNT 
+											+ LEFT_JOIN_COMPUTER_COMPANY 
+											+ WHERE_COMPUTER_NAME 
+											+ " or " + WHERE_COMPANY_NAME;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerDAO.class);
 	
 	private DataSource dsConnection;
-	private DatabaseConnection db;
-	private CompanyDAO instance;
+	private static ComputerDAO instance;
 	
 	
-	public ComputerDAO() {
-		LOGGER.info("instantiation computer DAO");
-		this.dsConnection = DataSource.getInstance();
-		//this.db = DatabaseConnection.getInstance();
-		this.instance = CompanyDAO.getInstance();
+	public static ComputerDAO getInstance() {
+		/**
+		 * @param DatabaseConnection
+		 * @return Companies
+		 */
+		if (instance == null) {
+			instance = new ComputerDAO();
+		}
+		return instance;
 	}
 	
-	public Optional<Computer> getComputer(int id) throws SQLException {
+	
+	private ComputerDAO() {
+		LOGGER.info("instantiation computer DAO");
+		this.dsConnection = DataSource.getInstance();;
+	}
+	
+	public Optional<Computer> getComputer(int id) {
 		try(Connection connection = dsConnection.getConnection();
-			Statement statement = connection.createStatement();	) {
+			Statement statement = connection.createStatement()) {
 	    
 		    ResultSet rs = statement.executeQuery(QUERY_GET + id);
 		    if(rs.next()) {
 		         return Optional.of(extractComputer(rs));
 		    }
+		} catch (SQLException exception) {
+			LOGGER.error("Unable to retrieve the computer with id : " + id);
 		}
 	    return Optional.empty(); 
 	}
 	
 	private Computer extractComputer(ResultSet rs) throws SQLException {
-		Optional<Company> company = instance.getCompany(rs.getInt(5));
+		CompanyDAO companyInstance = CompanyDAO.getInstance();
+		Optional<Company> company = companyInstance.getCompany(rs.getInt(5));
 		return new Computer.ComputerBuilder(rs.getString(2))
 				           .id(rs.getInt(1))
 				           .introductionDate(BddMapper.optTimestampToOptLocalDate(Optional.ofNullable(rs.getTimestamp(3))))
@@ -72,7 +96,7 @@ public class ComputerDAO implements ComputerDao {
 	public List<Computer> getAllComputers() {
 		List<Computer> companyList = new ArrayList<Computer>(); 
 		try(Connection connection = dsConnection.getConnection();
-				Statement statement = connection.createStatement();	) {
+			Statement statement = connection.createStatement()) {
 			ResultSet rs = statement.executeQuery(QUERY_SELECT);
 			while(rs.next()) {
 				companyList.add(extractComputer(rs));
@@ -86,7 +110,7 @@ public class ComputerDAO implements ComputerDao {
 	public ArrayList<Computer> getSearchedComputerRange(int pageNumber, String searchedName) {
 		ArrayList<Computer> computerRange = new ArrayList<Computer>();
 		try(Connection connection = dsConnection.getConnection();
-		    PreparedStatement ps = connection.prepareStatement(QUERY_SEARCH_GET_RANGE);) {
+		    PreparedStatement ps = connection.prepareStatement(QUERY_SEARCH_GET_RANGE)) {
 			
 	        ps.setString(1,"%"+searchedName+"%");
 	        ps.setString(2,"%"+searchedName+"%");
@@ -106,7 +130,7 @@ public class ComputerDAO implements ComputerDao {
 	public ArrayList<Computer> getComputerRange(int pageNumber) {
 		ArrayList<Computer> computerRange = new ArrayList<Computer>();
 		try(Connection connection = dsConnection.getConnection();
-		    PreparedStatement ps = connection.prepareStatement(QUERY_GET_RANGE);) {
+		    PreparedStatement ps = connection.prepareStatement(QUERY_GET_RANGE)) {
 			
 	        ps.setInt(1,pageNumber*NUMBER_RESULT_BY_PAGE);
 	        ResultSet rs = ps.executeQuery();
@@ -123,7 +147,7 @@ public class ComputerDAO implements ComputerDao {
 	public int insertComputer(Computer computer) {
 		int result = 0;
 		try(Connection connection = dsConnection.getConnection();
-			PreparedStatement ps = connection.prepareStatement(QUERY_INSERT);) {
+			PreparedStatement ps = connection.prepareStatement(QUERY_INSERT)) {
 			Optional<Timestamp> introDate = BddMapper.optLocalDateToOptTimestamp(computer.getIntroductionDate());
 			Optional<Timestamp> disDate = BddMapper.optLocalDateToOptTimestamp(computer.getDiscontinuedDate());
 	        ps.setString(1, computer.getComputerName());
@@ -142,7 +166,7 @@ public class ComputerDAO implements ComputerDao {
 	
 	public boolean updateComputer(Computer computer) {
 		try(Connection connection = dsConnection.getConnection();
-			PreparedStatement ps = connection.prepareStatement(QUERY_UPDATE);) {
+			PreparedStatement ps = connection.prepareStatement(QUERY_UPDATE)) {
 			Optional<Timestamp> introDate = BddMapper.optLocalDateToOptTimestamp(computer.getIntroductionDate());
 			Optional<Timestamp> disDate = BddMapper.optLocalDateToOptTimestamp(computer.getDiscontinuedDate());
 	        ps.setString(1, computer.getComputerName());
@@ -162,8 +186,8 @@ public class ComputerDAO implements ComputerDao {
 	
 	public int deleteComputer(int id) {
 		int result = 0;
-		try {
-	        Statement statement = db.connection.createStatement();
+		try(Connection connection = dsConnection.getConnection();
+				Statement statement = connection.createStatement();	) {
 	        result = statement.executeUpdate(QUERY_DELETE + id);
 	    } catch (SQLException e) {
 	        LOGGER.error("Unable to delete a computer in computer table",e);
@@ -173,7 +197,7 @@ public class ComputerDAO implements ComputerDao {
 	
 	public int getComputerCount() {
 		try(Connection connection = dsConnection.getConnection();
-			PreparedStatement ps = connection.prepareStatement(QUERY_COUNT);) {
+			PreparedStatement ps = connection.prepareStatement(QUERY_COUNT)) {
 			ResultSet rs = ps.executeQuery();
 	        if(rs.next()) {
 	        	return rs.getInt(1);
@@ -186,7 +210,7 @@ public class ComputerDAO implements ComputerDao {
 	
 	public int getComputerCountSearch(String searchedName) {
 		try(Connection connection = dsConnection.getConnection();
-			PreparedStatement ps = connection.prepareStatement(QUERY_COUNT_SEARCH);) {
+			PreparedStatement ps = connection.prepareStatement(QUERY_COUNT_SEARCH)){
 			ps.setString(1,"%"+searchedName+"%");
 	        ps.setString(2,"%"+searchedName+"%");
 			ResultSet rs = ps.executeQuery();

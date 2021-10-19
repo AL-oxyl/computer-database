@@ -3,7 +3,9 @@ package com.oxyl.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,8 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.oxyl.dto.ComputerDTO;
+import com.oxyl.exceptions.NotANumberException;
 import com.oxyl.mapper.ComputerMapper;
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
@@ -22,6 +27,7 @@ import com.oxyl.service.ComputerService;
 import com.oxyl.service.State;
 import com.oxyl.validator.ComputerValidator;
 
+@Controller
 @WebServlet("/edit")
 public class ControllerEditComputer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -31,8 +37,10 @@ public class ControllerEditComputer extends HttpServlet {
 	final String VIEW_404 = "/WEB-INF/views/404.html";
 	final String VIEW_EDIT = "/WEB-INF/views/editComputer.jsp";
 
-	public ControllerEditComputer() {
-		super();
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,config.getServletContext());
+		super.init(config);
 	}
 	
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {	
@@ -44,12 +52,7 @@ public class ControllerEditComputer extends HttpServlet {
 		String manufacturerName = "";
 		
 		if(ComputerValidator.checkNullableEntry(computerId, computerName,introductionDate,discontinuedDate,manufacturerId)) {
-			LOGGER.info("Etat introductionDate :" +  introductionDate);
-			LOGGER.info("Etat discontinuedDate :" +  discontinuedDate);
-			LOGGER.info("Etat manufacturerId :" +  manufacturerId);
-			LOGGER.info("Etat manufacturerName :" +  manufacturerName);
-			LOGGER.info("Etat computerId :" +  computerId);
-			LOGGER.info("Etat computerName :" + computerName);
+
 			this.getServletContext().getRequestDispatcher(VIEW_404).forward(req, resp);
 		} else {
 			ComputerDTO computerDto = new ComputerDTO(computerId, computerName,introductionDate,discontinuedDate,manufacturerName,manufacturerId);
@@ -65,15 +68,26 @@ public class ControllerEditComputer extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest req ,HttpServletResponse resp) throws ServletException, IOException {
 		String computerId = req.getParameter("id");
-		if (computerId != null) {
-			updateCompanies();
-			req.setAttribute("listCompanies", companies);
-			req.setAttribute("computerId", computerId);
-			LOGGER.info("requete envoyee get edit");
-			this.getServletContext().getRequestDispatcher(VIEW_EDIT).forward(req, resp);
-		} else {
-			LOGGER.info("requete envoyee get edit - erreur 404");
-			this.getServletContext().getRequestDispatcher(VIEW_404).forward(req, resp);
+		LOGGER.info("edit test");
+		try {
+			if (!ComputerValidator.checkNullableEntry(computerId) && ComputerValidator.checkValidId(computerId)) {
+				updateCompanies();
+				Optional<Computer> computer = ComputerService.getComputer(Integer.parseInt(computerId));
+				if(computer.isPresent()) {
+					ComputerDTO computerDto = new ComputerDTO(computer.get());
+					req.setAttribute("listCompanies", companies);
+					req.setAttribute("computer", computerDto);
+					LOGGER.info("requete envoyee get edit");
+					this.getServletContext().getRequestDispatcher(VIEW_EDIT).forward(req, resp);
+				} else {
+					resp.sendRedirect("dashboard?page=1");
+				}
+			} else {
+				LOGGER.info("requete envoyee get edit - erreur 404");
+				this.getServletContext().getRequestDispatcher(VIEW_404).forward(req, resp);
+			}
+		} catch (NotANumberException exception) {
+			resp.sendRedirect("dashboard?page=1");
 		}
 	}
 	

@@ -4,11 +4,15 @@ import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import com.oxyl.dao.CompanyDAO;
 import com.oxyl.model.Company;
 import com.oxyl.ui.Pagination;
 
+@Service
+@Scope("prototype")
 public class CompanyPageHandlerStrategyService implements GenericPageHandler<Company>{
 	private int numberPage;
 	private CompanyDAO companies;
