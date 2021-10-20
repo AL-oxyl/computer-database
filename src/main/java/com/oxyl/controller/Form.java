@@ -14,6 +14,7 @@ import com.oxyl.dao.ComputerDAO;
 import com.oxyl.model.Computer;
 import com.oxyl.service.CompanyPageHandlerStrategyService;
 import com.oxyl.service.ComputerPageHandlerStrategyService;
+import com.oxyl.service.ComputerService;
 import com.oxyl.ui.ComputerInfo;
 import com.oxyl.ui.Menu;
 import com.oxyl.ui.PageCompany;
@@ -26,25 +27,29 @@ public class Form {
 	private int secondMenuEntry;
 	private final HashSet<Integer> validFirstMenuValues = new HashSet<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6, 7));
 	private final HashSet<Integer> validSecondMenuValues = new HashSet<Integer>(Arrays.asList(1, 2, 3));
-	@Autowired
 	private ComputerPageHandlerStrategyService computerPageHandler;
-	@Autowired
 	private CompanyPageHandlerStrategyService companyPageHandler;
+	//private ComputerService computerService;
+	private ComputerDAO computers;
 	private Scanner scan;
 	private boolean continueMenu;
 	PageComputer pageComputer;
 	PageCompany pageCompany;
 	private static final Logger LOGGER = LoggerFactory.getLogger(Form.class);
 
-	
-	public Form() {
+	@Autowired
+	public Form(/**ComputerService computerService,*/ CompanyPageHandlerStrategyService companyPageHandler, 
+			    ComputerPageHandlerStrategyService computerPageHandler, ComputerDAO computerDao) {
+	//	this.computerService = computerService;
+		this.companyPageHandler = companyPageHandler;
+		this.computerPageHandler = computerPageHandler;	
+		this.computers = computerDao;
 		this.scan = new Scanner(System.in);
 		this.secondMenuEntry = 0;
 		this.continueMenu = true;
 	}
 	
 	private void initComputerPage() {
-		this.computerPageHandler = new ComputerPageHandlerStrategyService();
 		this.pageComputer = new PageComputer(computerPageHandler.getPageList());
 		pageComputer.showPage();
 	}
@@ -132,7 +137,6 @@ public class Form {
 		while(!validId) {
 			System.out.print("Entrez l'id de l'ordinateur souhaité : ");
 			int id = getSecureComputerIdInput();
-			ComputerDAO computers = ComputerDAO.getInstance();
 			validId = true;
 			if(computers.deleteComputer(id) == 1) {
 				LOGGER.info("L'ordinateur " + id + " a bien été supprimé.\n"); 
@@ -260,7 +264,6 @@ public class Form {
 			if (scan.hasNextInt()) {
 				value = scan.nextInt();
 
-					ComputerDAO computers = ComputerDAO.getInstance();
 					Optional<Computer> computer = computers.getComputer(value);	
 					return computer;	
 			} else {

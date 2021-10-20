@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -23,6 +24,7 @@ import com.oxyl.mapper.ComputerMapper;
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.service.CompanyService;
+import com.oxyl.service.ComputerPageHandlerStrategyService;
 import com.oxyl.service.ComputerService;
 import com.oxyl.service.State;
 import com.oxyl.validator.ComputerValidator;
@@ -36,6 +38,8 @@ public class ControllerEditComputer extends HttpServlet {
 	final String VIEW_DASHBOARD = "/WEB-INF/views/dashboard.jsp";
 	final String VIEW_404 = "/WEB-INF/views/404.html";
 	final String VIEW_EDIT = "/WEB-INF/views/editComputer.jsp";
+	@Autowired
+	ComputerService computerService;	
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -60,7 +64,7 @@ public class ControllerEditComputer extends HttpServlet {
 			if("".equals(computer.getComputerName())) {
 				this.getServletContext().getRequestDispatcher(VIEW_404).forward(req, resp);
 			} else {
-				ComputerService.updateComputer(computer);
+				computerService.updateComputer(computer);
 				resp.sendRedirect("dashboard?page=1");
 			}	
 		}
@@ -72,7 +76,7 @@ public class ControllerEditComputer extends HttpServlet {
 		try {
 			if (!ComputerValidator.checkNullableEntry(computerId) && ComputerValidator.checkValidId(computerId)) {
 				updateCompanies();
-				Optional<Computer> computer = ComputerService.getComputer(Integer.parseInt(computerId));
+				Optional<Computer> computer = computerService.getComputer(Integer.parseInt(computerId));
 				if(computer.isPresent()) {
 					ComputerDTO computerDto = new ComputerDTO(computer.get());
 					req.setAttribute("listCompanies", companies);

@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.persistence.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
@@ -36,8 +38,8 @@ public class CompanyDAO {
 	private static final String QUERY_COUNT = "select count(id) from company";
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompanyDAO.class);
 	
-	
-	private CompanyDAO() {
+	@Autowired
+	public CompanyDAO() {
 		/**
 		 * @param DatabaseConnection
 		 */

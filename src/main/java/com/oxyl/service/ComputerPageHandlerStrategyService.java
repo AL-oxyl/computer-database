@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -19,39 +20,41 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	
 	private ArrayList<Computer> computerPageList;
 	private int pageIndex;
-	private static int numberComputer = initNumberComputer();
-	private static int numberPage = initNumberPage();
+	private int numberComputer;
+	private int numberPage;
 	private static final int NUMBER_BUTTON = 5;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerPageHandlerStrategyService.class);
 	private int localNumberComputer;
 	private int localNumberPage;
-	private boolean pageChanged = false;
+	private boolean pageChanged;
 	private int[] buttonArray = new int[]{1,2,3,4,5};
 	private State state;
 	private String searchedEntry = "";
+	private ComputerDAO computers;
+	private IndexValidator indexValidateur;
 	
-	public ComputerPageHandlerStrategyService() {
-		ComputerDAO computers = ComputerDAO.getInstance();		
+	public ComputerPageHandlerStrategyService(ComputerDAO computerDao, IndexValidator indexValidateur ) {
+		this.computers = computerDao;	
+		this.indexValidateur = indexValidateur;
+		numberComputer = initNumberComputer();
+		numberPage = initNumberPage();
 		this.computerPageList = computers.getComputerRange(0);
-		this.pageIndex = 0;
 		this.state = State.NORMAL;
-		this.localNumberComputer = numberComputer;
 	}
 	
 	public void setPageChanged() {
 		this.pageChanged = true;
 	}
 	
-	private static int initNumberComputer() {
-		ComputerDAO computers = ComputerDAO.getInstance();
+	private int initNumberComputer() {
 		return computers.getComputerCount();
 	}
 	
-	private static int initNumberPage() {
+	private int initNumberPage() {
 		return (numberComputer/ComputerDAO.NUMBER_RESULT_BY_PAGE)+1;
 	}
 	
-	public static int getNumberComputer() {	
+	public int getNumberComputer() {	
 		return numberComputer;
 	}
 	
@@ -66,7 +69,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		}
 	}
 	
-	public static int getNumberPage() {		
+	public int getNumberPage() {		
 		return numberPage;
 	}
 	
@@ -90,7 +93,6 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 	
 	public void changeState(State state) {
-		ComputerDAO computers = ComputerDAO.getInstance();
 		this.state = state;
 		if(state==State.SEARCH || state==State.ORDERBYSEARCH) {
 			this.localNumberComputer = computers.getComputerCountSearch(searchedEntry);
@@ -101,7 +103,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		this.pageChanged = true;
 	}
 	
-	public static void setNumberComputer(int newNumberComputer) {
+	public void setNumberComputer(int newNumberComputer) {
 		numberComputer = newNumberComputer;
 	}
 	
@@ -137,14 +139,14 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	
 	
 	public void setPageIndex(int index) {
-		if(IndexValidator.indexValidator(index)) {
+		if(indexValidateur.indexValidator(index,numberPage)) {
 			this.pageIndex = index;
 			this.pageChanged = true;
 		}
 	}
 	
 	public void setLocalPageIndex(int index) {
-		if(IndexValidator.localIndexValidator(this,index)) {
+		if(indexValidateur.indexValidator(index,localNumberPage)) {
 			this.pageIndex = index;
 			this.pageChanged = true;
 		}
@@ -165,7 +167,6 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 
 	public ArrayList<Computer> getComputerPageList() {
 		if (pageChanged) {
-			ComputerDAO computers = ComputerDAO.getInstance();
 			switch(this.state) {
 				case NORMAL:
 					this.computerPageList = computers.getComputerRange(pageIndex);
@@ -199,7 +200,6 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 	
 	public void updateInfo(int entry) {
-		ComputerDAO computers = ComputerDAO.getInstance();
 		int ref = pageIndex;
 		setPageIndex(entry);
 		if(ref != pageIndex) {

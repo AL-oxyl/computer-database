@@ -30,8 +30,13 @@ import javax.servlet.annotation.WebServlet;
 public class ControllerComputer extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+	
 	@Autowired
 	private ComputerPageHandlerStrategyService computerPaginationService;
+	
+	@Autowired
+	private ComputerService computerService;
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ControllerComputer.class);
 	private final String ERROR404 = "/WEB-INF/views/404.html";
 
@@ -106,7 +111,8 @@ public class ControllerComputer extends HttpServlet {
 		List<String> idSelected = Arrays.asList(req.getParameter("selection").split(","));
 		try {
 			for (String id : idSelected) {
-				ComputerService.deleteComputer(Integer.parseInt(id));
+				computerService.deleteComputer(Integer.parseInt(id));
+				computerPaginationService.setNumberComputer(computerPaginationService.getNumberComputer()-1);
 			}
 			return true;
 		} catch (NumberFormatException e) {

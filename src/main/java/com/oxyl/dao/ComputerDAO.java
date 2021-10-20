@@ -19,6 +19,7 @@ import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.persistence.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
@@ -48,25 +49,12 @@ public class ComputerDAO implements ComputerDao {
 											+ " or " + WHERE_COMPANY_NAME;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerDAO.class);
 	
-	private DataSource dsConnection;
-	private static ComputerDAO instance;
+	private DataSource dsConnection;	
 	
-	
-	public static ComputerDAO getInstance() {
-		/**
-		 * @param DatabaseConnection
-		 * @return Companies
-		 */
-		if (instance == null) {
-			instance = new ComputerDAO();
-		}
-		return instance;
-	}
-	
-	
-	private ComputerDAO() {
+	@Autowired
+	public ComputerDAO(DataSource dsConnection) {
 		LOGGER.info("instantiation computer DAO");
-		this.dsConnection = DataSource.getInstance();;
+		this.dsConnection = dsConnection;
 	}
 	
 	public Optional<Computer> getComputer(int id) {

@@ -11,7 +11,7 @@ public class Demo {
     public static void main( String[] args ) {
         	CompanyDAO companies = CompanyDAO.getInstance();
 
-        	ComputerDAO computers = ComputerDAO.getInstance();
+       /** 	ComputerDAO computers = ComputerDAO.getInstance();
 
         	computers.deleteComputer(12);
         	Optional<Company> company = companies.getCompany("Sony");
@@ -19,7 +19,7 @@ public class Demo {
         	computers.updateComputer(new Computer.ComputerBuilder("MacBook Pro 15.4 inch")
         			                             .id(1)
         			                             .manufacturer(company)
-        			                             .build());
+        			                             .build());**/
 
         
     }
