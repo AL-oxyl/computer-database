@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import com.oxyl.dao.ComputerDAO;
 import com.oxyl.model.Computer;
 import com.oxyl.service.CompanyPageHandlerStrategyService;
 import com.oxyl.service.ComputerPageHandlerStrategyService;
@@ -30,20 +29,20 @@ public class Form {
 	private ComputerPageHandlerStrategyService computerPageHandler;
 	private CompanyPageHandlerStrategyService companyPageHandler;
 	//private ComputerService computerService;
-	private ComputerDAO computers;
+	private ComputerService computerService;
 	private Scanner scan;
 	private boolean continueMenu;
-	PageComputer pageComputer;
-	PageCompany pageCompany;
+	private PageComputer pageComputer;
+	private PageCompany pageCompany;
 	private static final Logger LOGGER = LoggerFactory.getLogger(Form.class);
 
 	@Autowired
 	public Form(/**ComputerService computerService,*/ CompanyPageHandlerStrategyService companyPageHandler, 
-			    ComputerPageHandlerStrategyService computerPageHandler, ComputerDAO computerDao) {
-	//	this.computerService = computerService;
+			    ComputerPageHandlerStrategyService computerPageHandler, ComputerService computerService) {
+		this.computerService = computerService;
 		this.companyPageHandler = companyPageHandler;
 		this.computerPageHandler = computerPageHandler;	
-		this.computers = computerDao;
+	//	this.computers = computerDao;
 		this.scan = new Scanner(System.in);
 		this.secondMenuEntry = 0;
 		this.continueMenu = true;
@@ -55,7 +54,6 @@ public class Form {
 	}
 	
 	private void initCompanyPage() {
-		this.companyPageHandler = new CompanyPageHandlerStrategyService();
 		this.pageCompany = new PageCompany(companyPageHandler.getPageList());
 		pageCompany.showPage();
 	}
@@ -138,11 +136,8 @@ public class Form {
 			System.out.print("Entrez l'id de l'ordinateur souhaité : ");
 			int id = getSecureComputerIdInput();
 			validId = true;
-			if(computers.deleteComputer(id) == 1) {
-				LOGGER.info("L'ordinateur " + id + " a bien été supprimé.\n"); 
-			} else {
-				LOGGER.error("ID non valide. Aucun ordinateur n'a été supprimé");
-			}
+			computerService.deleteComputer(id);
+			LOGGER.info("L'ordinateur " + id + " a bien été supprimé.\n"); 
 		}
 	}
 	
@@ -263,8 +258,7 @@ public class Form {
 		while(!validEntry) {
 			if (scan.hasNextInt()) {
 				value = scan.nextInt();
-
-					Optional<Computer> computer = computers.getComputer(value);	
+					Optional<Computer> computer = computerService.getComputer(value);	
 					return computer;	
 			} else {
 				LOGGER.error("\nCeci n'est pas un entier, merci de rentrer un entier\n");

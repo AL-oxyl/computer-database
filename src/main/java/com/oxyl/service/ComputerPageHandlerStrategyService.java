@@ -1,10 +1,10 @@
 package com.oxyl.service;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +17,7 @@ import com.oxyl.validator.IndexValidator;
 @Scope("prototype")
 public class ComputerPageHandlerStrategyService implements GenericPageHandler<Computer>{
 		
-	
-	private ArrayList<Computer> computerPageList;
+	private List<Optional<Computer>> computerPageList;
 	private int pageIndex;
 	private int numberComputer;
 	private int numberPage;
@@ -32,13 +31,14 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	private String searchedEntry = "";
 	private ComputerDAO computers;
 	private IndexValidator indexValidateur;
+	private final int NUMBER_RESULT_BY_PAGE = 10;
 	
 	public ComputerPageHandlerStrategyService(ComputerDAO computerDao, IndexValidator indexValidateur ) {
 		this.computers = computerDao;	
 		this.indexValidateur = indexValidateur;
 		numberComputer = initNumberComputer();
 		numberPage = initNumberPage();
-		this.computerPageList = computers.getComputerRange(0);
+		this.computerPageList = computers.getComputerRange(0, NUMBER_RESULT_BY_PAGE);
 		this.state = State.NORMAL;
 	}
 	
@@ -51,7 +51,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 	
 	private int initNumberPage() {
-		return (numberComputer/ComputerDAO.NUMBER_RESULT_BY_PAGE)+1;
+		return (numberComputer/NUMBER_RESULT_BY_PAGE)+1;
 	}
 	
 	public int getNumberComputer() {	
@@ -99,7 +99,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		} else {
 			this.localNumberComputer = computers.getComputerCount();
 		}
-		this.localNumberPage = (localNumberComputer/ComputerDAO.NUMBER_RESULT_BY_PAGE)+1;
+		this.localNumberPage = (localNumberComputer/NUMBER_RESULT_BY_PAGE)+1;
 		this.pageChanged = true;
 	}
 	
@@ -165,14 +165,14 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		return searchedEntry;
 	}
 
-	public ArrayList<Computer> getComputerPageList() {
+	public List<Optional<Computer>> getComputerPageList() {
 		if (pageChanged) {
 			switch(this.state) {
 				case NORMAL:
-					this.computerPageList = computers.getComputerRange(pageIndex);
+					this.computerPageList = computers.getComputerRange(pageIndex, NUMBER_RESULT_BY_PAGE);
 					break;
 				case SEARCH:
-					this.computerPageList = computers.getSearchedComputerRange(pageIndex, searchedEntry);
+					this.computerPageList = computers.getSearchedComputerRange(pageIndex, NUMBER_RESULT_BY_PAGE, searchedEntry);
 					break;
 				case ORDERBY:
 					break;
@@ -184,7 +184,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 
 
-	public void setPageList(ArrayList<Computer> computerPageList) {
+	public void setPageList(List<Optional<Computer>> computerPageList) {
 		this.computerPageList = computerPageList;
 	}	
 	
@@ -203,7 +203,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		int ref = pageIndex;
 		setPageIndex(entry);
 		if(ref != pageIndex) {
-			this.computerPageList = computers.getComputerRange(pageIndex);
+			this.computerPageList = computers.getComputerRange(pageIndex, NUMBER_RESULT_BY_PAGE);
 			LOGGER.info("Computer page info updated");
 		}
 	}
@@ -225,7 +225,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 
 	@Override
-	public ArrayList<Computer> getPageList() {
+	public List<Optional<Computer>> getPageList() {
 		return computerPageList;
 	}
 	

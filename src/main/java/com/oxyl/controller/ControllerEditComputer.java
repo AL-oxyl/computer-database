@@ -1,7 +1,6 @@
 package com.oxyl.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,13 +19,12 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.oxyl.dto.ComputerDTO;
 import com.oxyl.exceptions.NotANumberException;
+import com.oxyl.mapper.CompanyMapper;
 import com.oxyl.mapper.ComputerMapper;
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.service.CompanyService;
-import com.oxyl.service.ComputerPageHandlerStrategyService;
 import com.oxyl.service.ComputerService;
-import com.oxyl.service.State;
 import com.oxyl.validator.ComputerValidator;
 
 @Controller
@@ -34,12 +32,15 @@ import com.oxyl.validator.ComputerValidator;
 public class ControllerEditComputer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ControllerEditComputer.class);
-	private static List<Company> companies;
+	private List<Company> companies;
 	final String VIEW_DASHBOARD = "/WEB-INF/views/dashboard.jsp";
 	final String VIEW_404 = "/WEB-INF/views/404.html";
 	final String VIEW_EDIT = "/WEB-INF/views/editComputer.jsp";
 	@Autowired
-	ComputerService computerService;	
+	ComputerService computerService;
+	
+	@Autowired
+	CompanyService companyService;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -95,8 +96,8 @@ public class ControllerEditComputer extends HttpServlet {
 		}
 	}
 	
-	private static void updateCompanies() {
-		companies = CompanyService.getCompanies();
+	private void updateCompanies() {
+		companies = CompanyMapper.companyListToModelList(companyService.getCompanies());
 	}
 	
 	public List<Company> getCompanies() {

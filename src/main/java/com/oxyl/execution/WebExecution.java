@@ -7,7 +7,9 @@ import org.springframework.web.context.AbstractContextLoaderInitializer;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import com.oxyl.persistence.DataSource;
+import javax.sql.DataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @ComponentScan({"com.oxyl.controller",
@@ -27,6 +29,6 @@ public class WebExecution extends AbstractContextLoaderInitializer {
 	
 	@Bean
 	public DataSource dataSource() {
-		return DataSource.getInstance();
+		return new HikariDataSource(new HikariConfig("/datasource.properties"));
 	}
 }

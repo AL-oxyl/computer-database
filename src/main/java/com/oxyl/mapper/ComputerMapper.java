@@ -16,7 +16,6 @@ import com.oxyl.model.Computer;
 
 @Component
 public class ComputerMapper {
-	private static ComputerMapper instance;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerMapper.class);
 	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
@@ -24,23 +23,24 @@ public class ComputerMapper {
 		LOGGER.info("Computer mapper instantiate");
 	}
 
-	public static ComputerMapper getInstance() {
-		if (instance == null) {
-			instance = new ComputerMapper();
-		}
-		return instance;
-	}
-
 	public static ComputerDTO computerModelToComputerDTO(Computer model) {
 		return new ComputerDTO(model);
 	}
 
-	public static ArrayList<ComputerDTO> computerListToDTOList(ArrayList<Computer> computerList) {
+	public static List<ComputerDTO> computerListToDTOList(List<Optional<Computer>> computerList) {
 		ArrayList<ComputerDTO> dtoList = new ArrayList<ComputerDTO>();
-		for (Computer computer : computerList) {
-			dtoList.add(computerModelToComputerDTO(computer));
+		for (Optional<Computer> computer : computerList) {
+			dtoList.add(optionalComputerModelToComputerDTO(computer));
 		}
 		return dtoList;
+	}
+	
+	private static ComputerDTO optionalComputerModelToComputerDTO(Optional<Computer> computer) {
+		ComputerDTO dto = new ComputerDTO();
+		if (computer.isPresent()) {
+			return computerModelToComputerDTO(computer.get());
+		}
+		return dto;
 	}
 
 	public static Computer computerDTOToComputerModel(ComputerDTO dtoComputer, List<Company> companies)  {

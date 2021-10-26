@@ -1,5 +1,6 @@
 package com.oxyl.ui;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -10,9 +11,9 @@ import com.oxyl.model.Computer;
 @Component
 public class PageComputer {
 	
-	ArrayList<ComputerDTO> currentComputerListOnPage;
+	List<ComputerDTO> currentComputerListOnPage;
 	
-	public PageComputer(ArrayList<Computer> currentComputerListOnPage) {	
+	public PageComputer(List<Optional<Computer>> currentComputerListOnPage) {	
 		this.currentComputerListOnPage = ComputerMapper.computerListToDTOList(currentComputerListOnPage);
 	}
 		
@@ -27,7 +28,7 @@ public class PageComputer {
 		System.out.println(pageText.texte);
 	}
 	
-	public void setCurrentComputerListOnPage(ArrayList<Computer> currentComputerListOnPage) {
+	public void setCurrentComputerListOnPage(List<Optional<Computer>> currentComputerListOnPage) {
 		this.currentComputerListOnPage = ComputerMapper.computerListToDTOList(currentComputerListOnPage);
 	}
  }

@@ -1,24 +1,22 @@
 package com.oxyl.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oxyl.dao.bddmapper.CompanyRowMapper;
 import com.oxyl.model.Company;
-import com.oxyl.model.Computer;
-import com.oxyl.persistence.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Repository
@@ -26,122 +24,74 @@ public class CompanyDAO {
 	/**
 	 * This is the class that contains all companies. It follows Singleton pattern.
 	 */
-	private static CompanyDAO instance;
-	public ArrayList<Company> companyList;
-	//private DatabaseConnection db;
 	private DataSource dsConnection;
 	public static final short NUMBER_RESULT_BY_PAGE = 10;
-	private static final String QUERY_ALL = "select id,name from company";
-	private static final String QUERY_GET_BY_ID = "select id,name from company where id=";
-	private static final String QUERY_GET_BY_NAME = "select id,name from company where name=?";
-	private static final String QUERY_GET_RANGE = "select id,name from company limit ?,"+Short.toString(NUMBER_RESULT_BY_PAGE);
-	private static final String QUERY_COUNT = "select count(id) from company";
+	private static final String QUERY_ALL = "select id,name from company order by id";
+	private static final String QUERY_GET_BY_ID = "select id,name from company where id= :id";
+	private static final String QUERY_GET_BY_NAME = "select id,name from company where name= :name";
+	private static final String QUERY_GET_RANGE = "select id,name from company order by id limit :size offset :number";
+	private static final String QUERY_DELETE_COMPUTER_BY_COMPANY_ID = "delete from computer where company_id = :id";
+	private static final String QUERY_DELETE_BY_ID = "delete from company where id = :id";
+	private static final String QUERY_COUNT = "select count(company.id) from company";
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompanyDAO.class);
 	
 	@Autowired
-	public CompanyDAO() {
-		/**
-		 * @param DatabaseConnection
-		 */
-		this.dsConnection = DataSource.getInstance();
-		try(Connection connection = dsConnection.getConnection();
-			Statement statement = connection.createStatement();	) {
-			ResultSet rs = statement.executeQuery(QUERY_ALL);
-			ArrayList<Company> companyList = new ArrayList<Company>(); 
-			while(rs.next()) {
-				companyList.add(new Company(rs.getInt(1),rs.getString(2)));
-			}
-			this.companyList = companyList;
-		} catch (SQLException e) {
-			LOGGER.error("Unable to query all in company table",e);
-		}
+	public CompanyDAO(DataSource dataSource) {
+		LOGGER.info("instantiation company DAO");
+		this.dsConnection = dataSource;
 	}
 	
-	
-	public static CompanyDAO getInstance() {
-		/**
-		 * @param DatabaseConnection
-		 * @return Companies
-		 */
-		if (instance == null) {
-			instance = new CompanyDAO();
-		}
-		return instance;
+	public List<Optional<Company>> getAllCompanies() {
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		return getQueryHolder(QUERY_ALL, parameters);
 	}
 	
 	public Optional<Company> getCompany(int id) {
-		try(Connection connection = dsConnection.getConnection();
-			Statement statement = connection.createStatement()) {
-	        ResultSet rs = statement.executeQuery(QUERY_GET_BY_ID + id);
-	        if(rs.next()) {
-	            return Optional.of(extractCompany(rs));
-	        }
-
-	    } catch (SQLException e) {
-			LOGGER.error("Unable to query a company at the specified id in company table",e);
-	    }
-		return Optional.empty();
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("id", id);
+		return getQueryHolder(QUERY_GET_BY_ID, parameters).get(0);
 	}
 	
-	public Optional<Company> getCompany(String name) {
-		try(Connection connection = dsConnection.getConnection();
-			PreparedStatement ps = connection.prepareStatement(QUERY_GET_BY_NAME)) {
-	        
-	        ps.setString(1,name);
-	        ResultSet rs = ps.executeQuery();
-	        if(rs.next()) {
-	            return Optional.of(extractCompany(rs));
-	        }
-
-	    } catch (SQLException e) {
-			LOGGER.error("Unable to query a company at the specified name in company table",e);
-	    }
-	    return Optional.empty();
+	public List<Optional<Company>> getCompany(String name) {
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("name", name);
+		return getQueryHolder(QUERY_GET_BY_NAME, parameters);
 	}
 	
-	private Company extractCompany(ResultSet rs) throws SQLException {
-		return new Company(rs.getInt(1),rs.getString(2));
+	public List<Optional<Company>> getCompanyRange(int pageNumber, int numberResultByPage) {
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("size", numberResultByPage);
+		parameters.addValue("number", pageNumber);
+		return getQueryHolder(QUERY_GET_RANGE, parameters);
 	}
 	
-	public ArrayList<Company> getCompanyRange(int pageNumber) {
-		ArrayList<Company> companyRange = new ArrayList<Company>();
-		try(Connection connection = dsConnection.getConnection();
-			PreparedStatement ps = connection.prepareStatement(QUERY_GET_RANGE)) {
-	        ps.setInt(1,pageNumber*NUMBER_RESULT_BY_PAGE);
-	        ResultSet rs = ps.executeQuery();
-	        while(rs.next()) {
-	        	companyRange.add(extractCompany(rs));
-	        }
-		} catch (SQLException e) {
-			LOGGER.error("Unable to query a company range in company table",e);
-		}
-		return companyRange;
+	private List<Optional<Company>> getQueryHolder(String queryName, MapSqlParameterSource parameters) {
+	//	List<Company> companyList;
+	/**	if(parameters.getValues().isEmpty()) {
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dsConnection);
+			companyList = jdbcTemplate.query(queryName, new CompanyRowMapper());
+		} else {**/
+		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dsConnection);
+		List<Company> companyList = jdbcTemplate.query(queryName, parameters, new CompanyRowMapper());
+//		}
+		return companyList.stream().map(Optional::ofNullable).collect(Collectors.toList());
+	}
+	
+	@Transactional
+	public void deleteCompanyById(int id) {
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dsConnection);
+		parameters.addValue("id", id);
+		jdbcTemplate.update(QUERY_DELETE_COMPUTER_BY_COMPANY_ID, parameters);
+		jdbcTemplate.update(QUERY_DELETE_BY_ID, parameters);
 	}
 	
 	public int getCompanyCount() {
-		try(Connection connection = dsConnection.getConnection();
-			PreparedStatement ps = connection.prepareStatement(QUERY_COUNT)) {
-			ResultSet rs = ps.executeQuery();
-	        if(rs.next()) {
-	        	return rs.getInt(1);
-	        }
-	    } catch (SQLException e) {
-			LOGGER.error("Unable to query the company count in company table",e);
-	    }
-	    return 0; 
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dsConnection);
+		return jdbcTemplate.queryForObject(QUERY_COUNT, parameters,Integer.class);
 	}
 	
-	public List<Company> getAllCompanies() {
-		List<Company> companyList = new ArrayList<Company>(); 
-		try(Connection connection = dsConnection.getConnection();
-			Statement statement = connection.createStatement()) {
-			ResultSet rs = statement.executeQuery(QUERY_ALL);
-			while(rs.next()) {
-				companyList.add(extractCompany(rs));
-			}
-		} catch (SQLException e) {
-			LOGGER.error("Unable to query all in company table",e);
-		}
-		return companyList;
-	}
+	
+
 }

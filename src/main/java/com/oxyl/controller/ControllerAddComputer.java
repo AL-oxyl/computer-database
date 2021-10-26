@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.oxyl.dto.ComputerDTO;
+import com.oxyl.mapper.CompanyMapper;
 import com.oxyl.mapper.ComputerMapper;
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
@@ -40,13 +41,14 @@ public class ControllerAddComputer extends HttpServlet {
 	private ComputerService computerService;
 	@Autowired
 	private ComputerPageHandlerStrategyService pageService;
-
+	@Autowired
+	private CompanyService companyService;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,config.getServletContext());
 		super.init(config);
-		
+		LOGGER.info("Controller ajout instantié");
 	}
 	
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -77,8 +79,8 @@ public class ControllerAddComputer extends HttpServlet {
 		this.getServletContext().getRequestDispatcher(ADD).forward(req, resp);
 	}
 	
-	private static void updateCompanies() {
-		companies = CompanyService.getCompanies();
+	private void updateCompanies() {
+		companies = CompanyMapper.companyListToModelList(companyService.getCompanies());
 	}
 	
 	public List<Company> getCompanies() {

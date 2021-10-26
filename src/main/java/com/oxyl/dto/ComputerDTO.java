@@ -17,6 +17,15 @@ public class ComputerDTO {
 	private final String manufacturerName;
 	private final Optional<String> manufacturerId;
 	
+	public ComputerDTO() {
+		this.computerId = "";
+		this.computerName = "";
+		this.introductionDate = "";
+		this.discontinuedDate = "";
+		this.manufacturerName = "";
+		this.manufacturerId = Optional.of("");
+	}
+	
 	public ComputerDTO(Computer computer) {
 		Optional<String> manufacturerId = Optional.empty();
 		this.computerName = computer.getComputerName();

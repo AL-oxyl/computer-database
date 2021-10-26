@@ -1,9 +1,11 @@
 package com.oxyl.service;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -14,19 +16,19 @@ import com.oxyl.ui.Pagination;
 @Service
 @Scope("prototype")
 public class CompanyPageHandlerStrategyService implements GenericPageHandler<Company>{
+	private final int NUMBER_RESULT_BY_PAGE = 10;
 	private int numberPage;
 	private CompanyDAO companies;
 	private int pageIndex;
-	private ArrayList<Company> companyPageList;
+	private List<Optional<Company>> companyPageList;
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompanyPageHandlerStrategyService.class);
 
-	
-	public CompanyPageHandlerStrategyService() {
-		this.companies = CompanyDAO.getInstance();
-		this.companyPageList = companies.getCompanyRange(0);
+	@Autowired
+	public CompanyPageHandlerStrategyService(CompanyDAO companyDao) {
+		this.companyPageList = companyDao.getCompanyRange(0,NUMBER_RESULT_BY_PAGE);
 		this.pageIndex = 0;
-		int numberResult = companies.getCompanyCount();
-		this.numberPage = (numberResult/CompanyDAO.NUMBER_RESULT_BY_PAGE)+1;
+		int numberResult = companyDao.getCompanyCount();
+		this.numberPage = (numberResult/NUMBER_RESULT_BY_PAGE)+1;
  	}
 
 	public int getPageIndex() {
@@ -44,7 +46,7 @@ public class CompanyPageHandlerStrategyService implements GenericPageHandler<Com
 	}
 
 
-	public ArrayList<Company> getPageList() {
+	public List<Optional<Company>> getPageList() {
 		return companyPageList;
 	}
 
@@ -67,7 +69,7 @@ public class CompanyPageHandlerStrategyService implements GenericPageHandler<Com
 		int ref = pageIndex;
 		setPageIndex(entry);
 		if(ref != pageIndex) {
-			this.companyPageList = companies.getCompanyRange(pageIndex);
+			this.companyPageList = companies.getCompanyRange(pageIndex,NUMBER_RESULT_BY_PAGE);
 			LOGGER.info("Computer page info updated");
 		}
 	}
@@ -88,7 +90,7 @@ public class CompanyPageHandlerStrategyService implements GenericPageHandler<Com
 	}
 	
 	@Override
-	public void setPageList(ArrayList<Company> pageList) {
+	public void setPageList(List<Optional<Company>> pageList) {
 		this.companyPageList = pageList;
 	}
 	

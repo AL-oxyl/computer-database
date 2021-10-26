@@ -10,14 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.oxyl.dto.ComputerDTO;
 import com.oxyl.mapper.ComputerMapper;
-import com.oxyl.model.Computer;
 import com.oxyl.service.ComputerPageHandlerStrategyService;
 import com.oxyl.service.ComputerService;
 import com.oxyl.service.State;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -122,13 +121,13 @@ public class ControllerComputer extends HttpServlet {
 	}
 
 	private void handleRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		ArrayList<Computer> computerList = computerPaginationService.getComputerPageList();
+		List<ComputerDTO> computerList = ComputerMapper.computerListToDTOList(computerPaginationService.getComputerPageList());
 		req.setAttribute("pages", computerPaginationService.getButtonArray());
 		req.setAttribute("testLeft", !computerPaginationService.testLeft());
 		req.setAttribute("testRight", !computerPaginationService.testRight());
 		req.setAttribute("numberComputer", computerPaginationService.getLocalNumberComputer());
 		req.setAttribute("numberPage", computerPaginationService.getLocalNumberPage());
-		req.setAttribute("computerList", ComputerMapper.computerListToDTOList(computerList));
+		req.setAttribute("computerList", computerList);
 		req.setAttribute("testNumber", computerPaginationService.getLocalNumberComputer() > 1);
 		this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(req, resp);
 	}

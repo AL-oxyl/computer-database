@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.oxyl.dao.ComputerDAO;
+import com.oxyl.mapper.BddMapper;
 import com.oxyl.model.Computer;
 
 @Service
@@ -29,15 +30,15 @@ public class ComputerService {
 		return computer;
 	}
 	
-	public int addComputer(Computer computer) {
-		return computerDao.insertComputer(computer);
+	public void addComputer(Computer computer) {
+		computerDao.insertComputer(BddMapper.computerModelToComputerBdd(computer));
 	}
 	
-	public boolean updateComputer(Computer computer) {
-		return computerDao.updateComputer(computer);
+	public void updateComputer(Computer computer) {
+		computerDao.updateComputer(BddMapper.computerModelToComputerBdd(computer));
 	}
 	
-	public int deleteComputer(int id) {
-		return computerDao.deleteComputer(id);
+	public void deleteComputer(int id) {
+		computerDao.deleteComputer(id);
 	}
 }

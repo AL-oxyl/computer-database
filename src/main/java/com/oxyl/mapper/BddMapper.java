@@ -9,6 +9,10 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
+import com.oxyl.dto.BddComputerDTO;
+import com.oxyl.model.Company;
+import com.oxyl.model.Computer;
+
 @Component
 public class BddMapper {
 	
@@ -26,5 +30,12 @@ public class BddMapper {
 		return Optional.empty();
 	}
 	
-	
+	public static BddComputerDTO computerModelToComputerBdd(Computer computer) {
+		int computerId = computer.getId();
+		Optional<Timestamp> introDate = BddMapper.optLocalDateToOptTimestamp(computer.getIntroductionDate());
+		Optional<Timestamp> disDate = BddMapper.optLocalDateToOptTimestamp(computer.getDiscontinuedDate());
+		Optional<String> computerName = Optional.of(computer.getComputerName());
+		Optional<Integer> companyId = computer.getManufacturer().map(Company::getId);
+		return new BddComputerDTO(computerId,computerName,introDate,disDate,companyId);
+	}
 }
