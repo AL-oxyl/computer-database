@@ -4,18 +4,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
+
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.oxyl.dto.ComputerDTO;
 import com.oxyl.exceptions.NotANumberException;
@@ -28,71 +29,74 @@ import com.oxyl.service.ComputerService;
 import com.oxyl.validator.ComputerValidator;
 
 @Controller
-@WebServlet("/edit")
+@RequestMapping(value = "edit")
 public class ControllerEditComputer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ControllerEditComputer.class);
 	private List<Company> companies;
-	final String VIEW_DASHBOARD = "/WEB-INF/views/dashboard.jsp";
-	final String VIEW_404 = "/WEB-INF/views/404.html";
-	final String VIEW_EDIT = "/WEB-INF/views/editComputer.jsp";
-	@Autowired
-	ComputerService computerService;
+	final String VIEW_DASHBOARD = "dashboard";
+	final String ERROR_404 = "404";
+	final String VIEW_EDIT = "editComputer";
 	
-	@Autowired
+	private final String COMPUTER_NAME = "computerName";
+	private final String INTRODUCED = "introduced";
+	private final String DISCONTINUED = "discontinued";
+	private final String COMPANY_ID = "companyId";
+	private final String COMPUTER_ID = "computerId";
+	private final String ID = "id";
+
+	ComputerService computerService;
 	CompanyService companyService;
 
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,config.getServletContext());
-		super.init(config);
+	@Autowired
+	ControllerEditComputer(ComputerService computerService, CompanyService companyService) {
+		this.companyService = companyService;
+		this.computerService = computerService;
 	}
 	
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {	
-		String computerId = req.getParameter("computerId");
-		String computerName = req.getParameter("computerName");
-		String introductionDate = req.getParameter("introduced");
-		String discontinuedDate = req.getParameter("discontinued");
-		String manufacturerId = req.getParameter("companyId");
+	@RequestMapping(method = RequestMethod.PUT)
+	protected ModelAndView doPut(
+			@RequestParam(value = COMPUTER_ID, required = true) String computerId,
+			@RequestParam(value = COMPUTER_NAME, required = true) String computerName,
+            @RequestParam(value = INTRODUCED, required = false) String introductionDate,
+            @RequestParam(value = DISCONTINUED, required = false) String discontinuedDate,
+            @RequestParam(value = COMPANY_ID, required = false) String manufacturerId) throws ServletException, IOException {	
 		String manufacturerName = "";
 		
-		if(ComputerValidator.checkNullableEntry(computerId, computerName,introductionDate,discontinuedDate,manufacturerId)) {
-
-			this.getServletContext().getRequestDispatcher(VIEW_404).forward(req, resp);
-		} else {
-			ComputerDTO computerDto = new ComputerDTO(computerId, computerName,introductionDate,discontinuedDate,manufacturerName,manufacturerId);
-			Computer computer = ComputerMapper.computerDTOToComputerModel(computerDto,companies);
-			if("".equals(computer.getComputerName())) {
-				this.getServletContext().getRequestDispatcher(VIEW_404).forward(req, resp);
-			} else {
-				computerService.updateComputer(computer);
-				resp.sendRedirect("dashboard?page=1");
-			}	
-		}
+		if(ComputerValidator.checkNullableEntry(computerId, computerName,introductionDate,discontinuedDate,manufacturerId)) 
+			return new ModelAndView(ERROR_404);
+		ComputerDTO computerDto = new ComputerDTO(computerId, computerName,introductionDate,discontinuedDate,manufacturerName,manufacturerId);
+		Computer computer = ComputerMapper.computerDTOToComputerModel(computerDto,companies);
+		if("".equals(computer.getComputerName())) 
+			return new ModelAndView(ERROR_404);
+		computerService.updateComputer(computer);
+		return new ModelAndView(VIEW_DASHBOARD).addObject("page", "1");
 	}
 	
-	protected void doGet(HttpServletRequest req ,HttpServletResponse resp) throws ServletException, IOException {
-		String computerId = req.getParameter("id");
+	@RequestMapping(method = RequestMethod.GET)
+	protected ModelAndView doGet(@RequestParam(value = ID, required = true) String computerId) throws ServletException, IOException {
 		LOGGER.info("edit test");
+		ModelAndView editView = new ModelAndView(VIEW_EDIT);
 		try {
 			if (!ComputerValidator.checkNullableEntry(computerId) && ComputerValidator.checkValidId(computerId)) {
-				updateCompanies();
+				updateCompanies(); 
 				Optional<Computer> computer = computerService.getComputer(Integer.parseInt(computerId));
 				if(computer.isPresent()) {
 					ComputerDTO computerDto = new ComputerDTO(computer.get());
-					req.setAttribute("listCompanies", companies);
-					req.setAttribute("computer", computerDto);
+					editView.addObject("listCompanies", companies);
+					editView.addObject("computer", computerDto);
 					LOGGER.info("requete envoyee get edit");
-					this.getServletContext().getRequestDispatcher(VIEW_EDIT).forward(req, resp);
+					return editView;
 				} else {
-					resp.sendRedirect("dashboard?page=1");
+					return new ModelAndView(VIEW_DASHBOARD).addObject("page", "1");
 				}
+			
 			} else {
 				LOGGER.info("requete envoyee get edit - erreur 404");
-				this.getServletContext().getRequestDispatcher(VIEW_404).forward(req, resp);
+				return new ModelAndView(ERROR_404);
 			}
-		} catch (NotANumberException exception) {
-			resp.sendRedirect("dashboard?page=1");
+		} catch (NumberFormatException | NotANumberException exception) {
+			return new ModelAndView(VIEW_DASHBOARD).addObject("page", "1");
 		}
 	}
 	

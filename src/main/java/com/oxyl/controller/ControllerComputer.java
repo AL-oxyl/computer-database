@@ -1,14 +1,13 @@
 package com.oxyl.controller;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.oxyl.dto.ComputerDTO;
 import com.oxyl.mapper.ComputerMapper;
@@ -20,77 +19,79 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 
 @Controller
-@WebServlet("/dashboard")
-public class ControllerComputer extends HttpServlet {
-
-	private static final long serialVersionUID = 1L;
+@RequestMapping(value = "dashboard")
+public class ControllerComputer {
 	
-	@Autowired
 	private ComputerPageHandlerStrategyService computerPaginationService;
-	
-	@Autowired
 	private ComputerService computerService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ControllerComputer.class);
-	private final String ERROR404 = "/WEB-INF/views/404.html";
+	private final String ERROR404 = "404";
+	private final String SELECTION = "selection";
+	private final String DASHBOARD = "dashboard";
+	private final String SEARCH = "search";
+	private final String PAGE = "page";
+	private final String ORDER = "order";
 
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,config.getServletContext());
-		super.init(config);
+	
+	@Autowired
+	ControllerComputer(ComputerService computerService, ComputerPageHandlerStrategyService computerPaginationService) {
+		LOGGER.info("AddComputerController instantiated");
+		this.computerService = computerService;
+		this.computerPaginationService = computerPaginationService;
 	}
+	
 
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	@RequestMapping(method = RequestMethod.POST)
+	protected ModelAndView doPost(@RequestParam(value = SELECTION, required = true) String selection) throws ServletException, IOException {
 		boolean isValid = true;
-		if (req.getParameter("selection") != null) {
-			isValid = deleteSelection(req);
+		if (selection.length() > 0) {
+			isValid = deleteSelection(selection);
 			if (!isValid) {
-				this.getServletContext().getRequestDispatcher(ERROR404).forward(req, resp);
+				return new ModelAndView(ERROR404);
 			}
 		}
-		if (isValid) {
-			int numberPage = computerPaginationService.getPageIndex();
-			updateOnId(numberPage);
-			handleRequest(req, resp);
-			computerPaginationService.setPageChanged();
-		}
-		
+		ModelAndView dashboardView = new ModelAndView(DASHBOARD);
+		int numberPage = computerPaginationService.getPageIndex();
+		updateOnId(numberPage);
+		dashboardView = handleRequest(dashboardView);
+		computerPaginationService.setPageChanged();		
 		LOGGER.info("requete envoyee post dashboard");
+		return dashboardView;
 	}
 
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		boolean isValid = true;
-		if (req.getParameter("page") != null) {
-			isValid = updatePage(req);
+	@RequestMapping(method = RequestMethod.GET)
+	protected ModelAndView doGet(@RequestParam(value = SEARCH, required = false) String search,
+                                 @RequestParam(value = PAGE, required = false) String page,
+                                 @RequestParam(value = ORDER, required = false) String order) throws ServletException, IOException {
+		if (page != null) {
+			boolean isValid = updatePage(page);
 			if (!isValid) {
-				this.getServletContext().getRequestDispatcher(ERROR404).forward(req, resp);
+				return new ModelAndView(ERROR404);
 			}
 		}
-		if (req.getParameter("search") != null) {
-			this.computerPaginationService.setSearchedEntry(req.getParameter("search"));
+		ModelAndView dashboardView = new ModelAndView(DASHBOARD);
+		if (search != null) {
+			this.computerPaginationService.setSearchedEntry(search);
 			this.computerPaginationService.changeState(State.SEARCH);
-			if (req.getParameter("page") == null) {
+			if (page == null) {
 				this.computerPaginationService.setLocalPageIndex(0);
 			}
 		}
-		if (req.getParameter("search") == null && "1".equals(req.getParameter("page"))) {
+		if (search == null && "1".equals(page)) {
 			this.computerPaginationService.setSearchedEntry("");
 			this.computerPaginationService.changeState(State.NORMAL);
 		}
-		if (isValid) {
-			handleRequest(req, resp);
-		}
 		LOGGER.info("requete envoyee get dashboard");
+		return handleRequest(dashboardView);
 	}
 
-	private boolean updatePage(HttpServletRequest req) {
+	private boolean updatePage(String page) {
 		try {
-			int index = Integer.parseInt(req.getParameter("page")) - 1;
+			int index = Integer.parseInt(page) - 1;
 			updateOnId(index);
 			return true;
 		} catch (NumberFormatException e) {
@@ -106,8 +107,8 @@ public class ControllerComputer extends HttpServlet {
 		computerPaginationService.updateButtonArray(lastPage);
 	}
 
-	private boolean deleteSelection(HttpServletRequest req) {
-		List<String> idSelected = Arrays.asList(req.getParameter("selection").split(","));
+	private boolean deleteSelection(String selection) {
+		List<String> idSelected = Arrays.asList(selection.split(","));
 		try {
 			for (String id : idSelected) {
 				computerService.deleteComputer(Integer.parseInt(id));
@@ -120,15 +121,15 @@ public class ControllerComputer extends HttpServlet {
 		return false;
 	}
 
-	private void handleRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	private ModelAndView handleRequest(ModelAndView view) throws ServletException, IOException {
 		List<ComputerDTO> computerList = ComputerMapper.computerListToDTOList(computerPaginationService.getComputerPageList());
-		req.setAttribute("pages", computerPaginationService.getButtonArray());
-		req.setAttribute("testLeft", !computerPaginationService.testLeft());
-		req.setAttribute("testRight", !computerPaginationService.testRight());
-		req.setAttribute("numberComputer", computerPaginationService.getLocalNumberComputer());
-		req.setAttribute("numberPage", computerPaginationService.getLocalNumberPage());
-		req.setAttribute("computerList", computerList);
-		req.setAttribute("testNumber", computerPaginationService.getLocalNumberComputer() > 1);
-		this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(req, resp);
+		view.addObject("pages", computerPaginationService.getButtonArray());
+		view.addObject("testLeft", !computerPaginationService.testLeft());
+		view.addObject("testRight", !computerPaginationService.testRight());
+		view.addObject("numberComputer", computerPaginationService.getLocalNumberComputer());
+		view.addObject("numberPage", computerPaginationService.getLocalNumberPage());
+		view.addObject("computerList", computerList);
+		view.addObject("testNumber", computerPaginationService.getLocalNumberComputer() > 1);
+		return view;
 	}
 }
