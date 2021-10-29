@@ -25,7 +25,7 @@ import org.springframework.stereotype.Repository;
 public class ComputerDAO implements ComputerDao {
 	private static final String QUERY_ALL = "select computer.id,computer.name,company.name, computer.introduced,computer.discontinued,computer.company_id "
 			                              + "from computer left join company on company.id = computer.company_id";
-	private static final String QUERY_GET = QUERY_ALL + "where computer.id= :id";
+	private static final String QUERY_GET = QUERY_ALL + " where computer.id= :id";
 	private static final String QUERY_INSERT = "insert INTO computer VALUES (NULL, :name, :intro, :discontinued, :company_id)";
 	private static final String QUERY_UPDATE = "update computer SET name= :name, introduced= :intro, "
 			                                 + "discontinued= :discontinued, company_id= :company_id where id= :id";

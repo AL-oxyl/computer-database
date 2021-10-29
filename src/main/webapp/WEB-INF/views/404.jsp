@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <html>
 <head>
     <title>Computer Database</title>
@@ -11,14 +12,14 @@
 <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="/cdb/dashboard"> Application - Computer Database </a>
+            <a class="navbar-brand" href="/cdb/dashboard"> <spring:message code="label.home"></spring:message> </a>
         </div>
     </header>
 
     <section id="main">
         <div class="container">
             <div class="alert alert-danger">
-                Error 404: Page not found. Too bad bitch!
+                <spring:message code="label.pageNotFound"></spring:message>
                 <br/>
                 <!-- stacktrace -->
             </div>
