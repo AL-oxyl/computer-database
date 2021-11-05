@@ -1,21 +1,22 @@
 package com.oxyl.model;
 
+
 public class Company {
-	
-	private int id;
+
+	private Integer id;
 	private String name;
-	
-	public Company(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}
 	
 	public Company() {
 		this.id = -1;
 		this.name = "";
 	}
 	
-	public int getId() {
+	public Company(int id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+	
+	public Integer getId() {
 		return id;
 	}
 	public void setId(int id) {

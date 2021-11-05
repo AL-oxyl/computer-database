@@ -26,16 +26,16 @@ public class ComputerService {
 	
 	public Optional<Computer> getComputer(int id) {
 		LOGGER.info("Je suis passé par là");
-		Optional<Computer> computer = computerDao.getComputer(id);
+		Optional<Computer> computer = BddMapper.computerPersistDtoToComputerModel(computerDao.getComputer(id));
 		return computer;
 	}
 	
 	public void addComputer(Computer computer) {
-		computerDao.insertComputer(BddMapper.computerModelToComputerBdd(computer));
+		computerDao.insertComputer(computer);
 	}
 	
 	public void updateComputer(Computer computer) {
-		computerDao.updateComputer(BddMapper.computerModelToComputerBdd(computer));
+		computerDao.updateComputer(computer);
 	}
 	
 	public void deleteComputer(int id) {

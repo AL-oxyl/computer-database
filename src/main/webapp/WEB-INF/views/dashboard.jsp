@@ -4,13 +4,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title><spring:message code="label.home"></spring:message></title>
+	<title>	<spring:message code="label.home"></spring:message></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
 <!-- Bootstrap -->
-<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="css/font-awesome.css" rel="stylesheet" media="screen">
-<link href="css/main.css" rel="stylesheet" media="screen">
+<link href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="${pageContext.request.contextPath}/resources/css/font-awesome.css" rel="stylesheet" media="screen">
+<link href="${pageContext.request.contextPath}/resources/css/main.css" rel="stylesheet" media="screen">
 </head>
 <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
@@ -24,6 +24,7 @@
             <h1 id="homeTitle">
                  ${numberComputer} <spring:message code="label.computerFound"></spring:message><c:if test="${testNumber}">s</c:if> 
                  <spring:message code="label.found"></spring:message><c:if test="${testNumber}">s</c:if> 
+                 
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
@@ -122,8 +123,8 @@
         </div>
 
     </footer>
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/dashboard.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/jquery.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/bootstrap.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/dashboard.js"></script>
 </body>
 </html>

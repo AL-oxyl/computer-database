@@ -1,18 +1,16 @@
 package com.oxyl.dto;
 
-import java.sql.Timestamp;
-
-import java.util.Optional;
+import java.time.LocalDate;
 
 public class BddComputerDTO {
-	private final int computerId;
-	private final Optional<String> computerName;
-	private final Optional<Timestamp> introductionDate;
-	private final Optional<Timestamp> discontinuedDate;
-	private final Optional<Integer> manufacturerId;
+	private final Integer computerId;
+	private final String computerName;
+	private final LocalDate introductionDate;
+	private final LocalDate discontinuedDate;
+	private final Integer manufacturerId;
 	
-	public BddComputerDTO(int computerId, Optional<String> computerName, Optional<Timestamp> introductionDate,
-			              Optional<Timestamp> discontinuedDate, Optional<Integer> manufacturerId) {
+	public BddComputerDTO(Integer computerId, String computerName, LocalDate introductionDate,
+			              LocalDate discontinuedDate, Integer manufacturerId) {
 		this.computerId = computerId;
 		this.computerName = computerName;
 		this.introductionDate = introductionDate;
@@ -20,23 +18,23 @@ public class BddComputerDTO {
 		this.manufacturerId = manufacturerId;
 	}
 
-	public int getComputerId() {
+	public Integer getComputerId() {
 		return computerId;
 	}
 
-	public Optional<String> getComputerName() {
+	public String getComputerName() {
 		return computerName;
 	}
 
-	public Optional<Timestamp> getIntroductionDate() {
+	public LocalDate getIntroductionDate() {
 		return introductionDate;
 	}
 
-	public Optional<Timestamp> getDiscontinuedDate() {
+	public LocalDate getDiscontinuedDate() {
 		return discontinuedDate;
 	}
 
-	public Optional<Integer> getManufacturerId() {
+	public Integer getManufacturerId() {
 		return manufacturerId;
 	}
 	

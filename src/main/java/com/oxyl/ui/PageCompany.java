@@ -1,6 +1,5 @@
 package com.oxyl.ui;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -9,18 +8,16 @@ import com.oxyl.model.Company;
 @Component
 public class PageCompany {
 	
-	List<Optional<Company>> currentCompanyListOnPage;
+	List<Company> currentCompanyListOnPage;
 	
-	public PageCompany(List<Optional<Company>> currentCompanyListOnPage) {
+	public PageCompany(List<Company> currentCompanyListOnPage) {
 		this.currentCompanyListOnPage = currentCompanyListOnPage;
 	}
 		
 	public void showPage() {
 		System.out.println("id :   \tname :    ");
-		for(Optional<Company> company : currentCompanyListOnPage) {
-			if(company.isPresent()) {
-				System.out.println(company.get());
-			}
+		for(Company company : currentCompanyListOnPage) {
+			System.out.println(company);	
 		}
 	}
 	
@@ -28,7 +25,7 @@ public class PageCompany {
 		System.out.println(pageText.texte);
 	}
 	
-	public void setCurrentCompanyListOnPage(List<Optional<Company>> currentCompanyListOnPage) {
+	public void setCurrentCompanyListOnPage(List<Company> currentCompanyListOnPage) {
 		this.currentCompanyListOnPage = currentCompanyListOnPage;
 	}
  }

@@ -55,7 +55,7 @@ public class ControllerComputer {
 			}
 		}
 		ModelAndView dashboardView = new ModelAndView(DASHBOARD);
-		int numberPage = computerPaginationService.getPageIndex();
+		Long numberPage = computerPaginationService.getPageIndex();
 		updateOnId(numberPage);
 		dashboardView = handleRequest(dashboardView);
 		computerPaginationService.setPageChanged();		
@@ -78,7 +78,7 @@ public class ControllerComputer {
 			this.computerPaginationService.setSearchedEntry(search);
 			this.computerPaginationService.changeState(State.SEARCH);
 			if (page == null) {
-				this.computerPaginationService.setLocalPageIndex(0);
+				this.computerPaginationService.setLocalPageIndex(0L);
 			}
 		}
 		if (search == null && "1".equals(page)) {
@@ -91,18 +91,18 @@ public class ControllerComputer {
 
 	private boolean updatePage(String page) {
 		try {
-			int index = Integer.parseInt(page) - 1;
+			Long index = Long.parseLong(page) - 1;
 			updateOnId(index);
 			return true;
 		} catch (NumberFormatException e) {
-			updateOnId(0);
+			updateOnId(0L);
 		} catch (NullPointerException e) {
-			updateOnId(0);		}
+			updateOnId(0L);		}
 		return false;
 	}
 
-	private void updateOnId(int id) {
-		int lastPage = computerPaginationService.getPageIndex();
+	private void updateOnId(Long id) {
+		Long lastPage = computerPaginationService.getPageIndex();
 		computerPaginationService.setPageIndex(id);
 		computerPaginationService.updateButtonArray(lastPage);
 	}

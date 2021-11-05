@@ -1,6 +1,5 @@
 package com.oxyl.ui;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,7 @@ public class PageComputer {
 	
 	List<ComputerDTO> currentComputerListOnPage;
 	
-	public PageComputer(List<Optional<Computer>> currentComputerListOnPage) {	
+	public PageComputer(List<Computer> currentComputerListOnPage) {	
 		this.currentComputerListOnPage = ComputerMapper.computerListToDTOList(currentComputerListOnPage);
 	}
 		
@@ -28,7 +27,7 @@ public class PageComputer {
 		System.out.println(pageText.texte);
 	}
 	
-	public void setCurrentComputerListOnPage(List<Optional<Computer>> currentComputerListOnPage) {
+	public void setCurrentComputerListOnPage(List<Computer> currentComputerListOnPage) {
 		this.currentComputerListOnPage = ComputerMapper.computerListToDTOList(currentComputerListOnPage);
 	}
  }

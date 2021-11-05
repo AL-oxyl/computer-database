@@ -53,9 +53,9 @@ public class ComputerValidator {
 		return true;
 	}
 
-	private static Optional<LocalDate> checkOnceDate(String introDate) throws BadDateException {
+	private static LocalDate checkOnceDate(String introDate) throws BadDateException {
 		try {
-			return Optional.of(LocalDate.parse(introDate, dtf));
+			return LocalDate.parse(introDate, dtf);
 		} catch (DateTimeParseException e){
 			throw new BadDateException("La date " + introDate + "n'est pas au format valide");
 		}
@@ -74,14 +74,11 @@ public class ComputerValidator {
 		}
 	}
 
-	private static boolean checkValidManufacturer(Optional<String> manufacturerId, List<Company> companies) throws NotANumberException {
-		if (!manufacturerId.isPresent() || "".equals(manufacturerId.get())) {
-			return true;
-		}
-		if (checkManufacturer(manufacturerId.get())) {
+	private static boolean checkValidManufacturer(String manufacturerId, List<Company> companies) throws NotANumberException {
+		if (checkManufacturer(manufacturerId)) {
 			for (Company company : companies) {
 				try {
-					if (Integer.parseInt(manufacturerId.get()) == company.getId()) {
+					if (Integer.parseInt(manufacturerId) == company.getId()) {
 						return true;
 					}
 				} catch (NumberFormatException e){
@@ -93,19 +90,19 @@ public class ComputerValidator {
 		return false;
 	}
 
-	private static void checkDateOrder(Optional<LocalDate> intro, Optional<LocalDate> dis) throws BadDateOrderException{
-		if (intro.isPresent() && dis.isPresent()) {
-			if(dis.get().isBefore(intro.get())) {
-				throw new BadDateOrderException();
-			}
+	private static void checkDateOrder(LocalDate intro, LocalDate dis) throws BadDateOrderException{
+		if(dis.isBefore(intro)) {
+			throw new BadDateOrderException();
 		}
 	}
+	
 	
 
 	public static Map<String,String> checkComputer(ComputerDTO dto, List<Company> companies) {
 		Map<String,String> exceptionsMap = new HashMap<String,String>();
-		Optional<LocalDate> intro = Optional.empty();
-		Optional<LocalDate> dis = Optional.empty();
+		LocalDate intro = null;
+		LocalDate dis = null;
+		
 		try {
 			intro = checkOnceDate(dto.getIntroductionDate());
 		} catch (BadDateException exception){
@@ -118,10 +115,12 @@ public class ComputerValidator {
 			exceptionsMap.put(DISDATE, exception.getMessage());
 		}
 		
-		try {
-			checkDateOrder(intro, dis);
-		} catch (BadDateOrderException exception) {
-			exceptionsMap.put(ORDERDATE, exception.getMessage());
+		if(intro != null && dis != null) {
+			try {
+				checkDateOrder(intro, dis);
+			} catch (BadDateOrderException exception) {
+				exceptionsMap.put(ORDERDATE, exception.getMessage());
+			}
 		}
 		
 		try {

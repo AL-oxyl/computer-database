@@ -1,20 +1,21 @@
 package com.oxyl.model;
 import java.time.LocalDate;
-import java.util.Optional;
+
 
 public class Computer {
+
 	private final Integer id;
 	private final String computerName;
-	private final Optional<LocalDate> introductionDate;
-	private final Optional<LocalDate> discontinuedDate;
-	private final Optional<Company> manufacturer;
+	private final LocalDate introductionDate;
+	private final LocalDate discontinuedDate;
+	private final Company company;
 	
 	public Computer(ComputerBuilder builder) {
 		this.computerName = builder.computerName;
 		this.id = builder.id;
 		this.introductionDate = builder.introductionDate;
 		this.discontinuedDate  = builder.discontinuedDate;
-		this.manufacturer = builder.manufacturer;
+		this.company = builder.company;
 	}
 	
 	//Getter
@@ -22,16 +23,16 @@ public class Computer {
 		return computerName;
 	}
 	
-	public Optional<LocalDate> getIntroductionDate() {
+	public LocalDate getIntroductionDate() {
 		return introductionDate;
 	}
 
-	public Optional<LocalDate> getDiscontinuedDate() {
+	public LocalDate getDiscontinuedDate() {
 		return discontinuedDate;
 	}
 
-	public Optional<Company> getManufacturer() {
-		return manufacturer;
+	public Company getManufacturer() {
+		return company;
 	}
 
 	public int getId() {
@@ -42,15 +43,15 @@ public class Computer {
 	public String toString() {
 		
 		return "id : "+this.id+ "\tname : "+this.computerName+ "\tintroduction date : "+this.introductionDate+ "\tdiscontinuedDate : "+this.discontinuedDate
-				      + "\tcompany : "+this.manufacturer;
+				      + "\tcompany : "+this.company;
 	}
 	
 	public static class ComputerBuilder {
 		private final String computerName;
 		private Integer id;
-		private Optional<LocalDate> introductionDate;
-		private Optional<LocalDate> discontinuedDate;
-		private Optional<Company> manufacturer;
+		private LocalDate introductionDate;
+		private LocalDate discontinuedDate;
+		private Company company;
 		
 		public ComputerBuilder(String name) {
 			this.computerName = name;
@@ -61,18 +62,18 @@ public class Computer {
 			return this;
 		}
 		
-		public ComputerBuilder introductionDate(Optional<LocalDate> date) {
+		public ComputerBuilder introductionDate(LocalDate date) {
 			this.introductionDate = date;
 			return this;
 		}
 		
-		public ComputerBuilder discontinuedDate(Optional<LocalDate> date) {
+		public ComputerBuilder discontinuedDate(LocalDate date) {
 			this.discontinuedDate = date;
 			return this;
 		}
 		
-		public ComputerBuilder manufacturer(Optional<Company> company) {
-			this.manufacturer = company;
+		public ComputerBuilder manufacturer(Company company) {
+			this.company = company;
 			return this;
 		}
 		

@@ -20,7 +20,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.oxyl.dto.ComputerDTO;
 import com.oxyl.exceptions.NotANumberException;
-import com.oxyl.mapper.CompanyMapper;
 import com.oxyl.mapper.ComputerMapper;
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
@@ -101,7 +100,7 @@ public class ControllerEditComputer extends HttpServlet {
 	}
 	
 	private void updateCompanies() {
-		companies = CompanyMapper.companyListToModelList(companyService.getCompanies());
+		companies = companyService.getCompanies();
 	}
 	
 	public List<Company> getCompanies() {

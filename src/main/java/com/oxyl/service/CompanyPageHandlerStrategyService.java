@@ -1,7 +1,6 @@
 package com.oxyl.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,32 +9,34 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.oxyl.dao.CompanyDAO;
+import com.oxyl.mapper.BddMapper;
 import com.oxyl.model.Company;
 import com.oxyl.ui.Pagination;
 
 @Service
 @Scope("prototype")
 public class CompanyPageHandlerStrategyService implements GenericPageHandler<Company>{
-	private final int NUMBER_RESULT_BY_PAGE = 10;
-	private int numberPage;
+	private final Long NUMBER_RESULT_BY_PAGE = 10L;
+	private Long numberPage;
 	private CompanyDAO companies;
-	private int pageIndex;
-	private List<Optional<Company>> companyPageList;
+	private Long pageIndex;
+	private List<Company> companyPageList;
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompanyPageHandlerStrategyService.class);
 
 	@Autowired
 	public CompanyPageHandlerStrategyService(CompanyDAO companyDao) {
-		this.companyPageList = companyDao.getCompanyRange(0,NUMBER_RESULT_BY_PAGE);
-		this.pageIndex = 0;
-		int numberResult = companyDao.getCompanyCount();
+		this.companyPageList = BddMapper.companyPersistDtoListToCompanyModelList(
+				companyDao.getCompanyRange(0L,NUMBER_RESULT_BY_PAGE));
+		this.pageIndex = 0L;
+		Long numberResult = companyDao.getCompanyCount();
 		this.numberPage = (numberResult/NUMBER_RESULT_BY_PAGE)+1;
  	}
 
-	public int getPageIndex() {
+	public Long getPageIndex() {
 		return pageIndex;
 	}
 	
-	public void setPageIndex(int index) {
+	public void setPageIndex(Long index) {
 		if(index < 0) {
 			LOGGER.error("Index négatif interdit");
 		} else if (index >= numberPage) {
@@ -46,11 +47,11 @@ public class CompanyPageHandlerStrategyService implements GenericPageHandler<Com
 	}
 
 
-	public List<Optional<Company>> getPageList() {
+	public List<Company> getPageList() {
 		return companyPageList;
 	}
 
-	public int getNumberPage() {
+	public Long getNumberPage() {
 		return numberPage;
 	}	
 	
@@ -65,11 +66,12 @@ public class CompanyPageHandlerStrategyService implements GenericPageHandler<Com
 		}		
 	}
 	
-	public void updateInfo(int entry) {
-		int ref = pageIndex;
+	public void updateInfo(Long entry) {
+		Long ref = pageIndex;
 		setPageIndex(entry);
 		if(ref != pageIndex) {
-			this.companyPageList = companies.getCompanyRange(pageIndex,NUMBER_RESULT_BY_PAGE);
+			this.companyPageList = BddMapper.companyPersistDtoListToCompanyModelList(
+					companies.getCompanyRange(pageIndex,NUMBER_RESULT_BY_PAGE));
 			LOGGER.info("Computer page info updated");
 		}
 	}
@@ -90,7 +92,7 @@ public class CompanyPageHandlerStrategyService implements GenericPageHandler<Com
 	}
 	
 	@Override
-	public void setPageList(List<Optional<Company>> pageList) {
+	public void setPageList(List<Company> pageList) {
 		this.companyPageList = pageList;
 	}
 	

@@ -6,14 +6,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.AbstractContextLoaderInitializer;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
-@ComponentScan({"com.oxyl.controller",
+@ComponentScan({"com.oxyl.execution",
+				"com.oxyl.controller",
 	            "com.oxyl.dao",
 	            "com.oxyl.mapper",
 	            "com.oxyl.service",
@@ -27,11 +27,4 @@ public class WebExecution extends AbstractContextLoaderInitializer {
 		context.register(WebExecution.class);
 		return context;
 	}
-	
-	@Bean
-	public DataSource dataSource() {
-		return new HikariDataSource(new HikariConfig("/datasource.properties"));
-	}
-	
-	
 }

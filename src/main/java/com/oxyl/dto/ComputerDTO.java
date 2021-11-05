@@ -2,20 +2,25 @@ package com.oxyl.dto;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.oxyl.dao.CompanyDAO;
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 
 
 
 public class ComputerDTO {
-	private final String computerId;
-	private final String computerName;
-	private final String introductionDate;
-	private final String discontinuedDate;
-	private final String manufacturerName;
-	private final Optional<String> manufacturerId;
+	private String computerId;
+	private String computerName;
+	private String introductionDate;
+	private String discontinuedDate;
+	private String manufacturerName;
+	private String manufacturerId;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerDTO.class);
+
 	
 	public ComputerDTO() {
 		this.computerId = "";
@@ -23,23 +28,28 @@ public class ComputerDTO {
 		this.introductionDate = "";
 		this.discontinuedDate = "";
 		this.manufacturerName = "";
-		this.manufacturerId = Optional.of("");
+		this.manufacturerId = "";
 	}
 	
 	public ComputerDTO(Computer computer) {
-		Optional<String> manufacturerId = Optional.empty();
+		LOGGER.info(computer.toString());
+		this.manufacturerId = "";
 		this.computerName = computer.getComputerName();
 		this.computerId = Integer.toString(computer.getId()).toString();
-		Optional<LocalDate> introductionDate = computer.getIntroductionDate();
-		Optional<LocalDate> discontinuedDate = computer.getDiscontinuedDate();
-		this.introductionDate = introductionDate.map(date->date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).orElse("");
-		this.discontinuedDate = discontinuedDate.map(date->date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).orElse("");
-		Company manufacturer = computer.getManufacturer().orElse(new Company());
-		this.manufacturerName = manufacturer.getName();
-		if(!"".equals(manufacturer.getName())) {
-			this.manufacturerId = Optional.of(Integer.toString(manufacturer.getId()));
-		} else {
-			this.manufacturerId = manufacturerId;
+		LocalDate introductionDate = computer.getIntroductionDate();
+		LocalDate discontinuedDate = computer.getDiscontinuedDate();
+		if (introductionDate != null) {
+			this.introductionDate = introductionDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		}
+		if (discontinuedDate != null) {
+			this.discontinuedDate = discontinuedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		}
+		Company manufacturer = computer.getManufacturer();
+		if (manufacturer != null) {
+			this.manufacturerName = manufacturer.getName();
+			if(!"".equals(manufacturer.getName())) {
+				this.manufacturerId = Integer.toString(manufacturer.getId());
+			}
 		}
 	}
 	
@@ -49,7 +59,7 @@ public class ComputerDTO {
 		this.introductionDate = introductionDate;
 		this.discontinuedDate = discontinuedDate;
 		this.manufacturerName = manufacturerName;
-		this.manufacturerId = Optional.ofNullable(manufacturerId);
+		this.manufacturerId = manufacturerId;
 	}
 	
 	public String getComputerId() {
@@ -72,7 +82,7 @@ public class ComputerDTO {
 		return manufacturerName;
 	}
 	
-	public Optional<String> getCompanyId() {
+	public String getCompanyId() {
 		return manufacturerId;
 	}
 }

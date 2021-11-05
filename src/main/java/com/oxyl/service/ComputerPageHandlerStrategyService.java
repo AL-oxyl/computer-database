@@ -1,7 +1,6 @@
 package com.oxyl.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.oxyl.dao.ComputerDAO;
+import com.oxyl.mapper.BddMapper;
 import com.oxyl.model.Computer;
 import com.oxyl.ui.Pagination;
 import com.oxyl.validator.IndexValidator;
@@ -17,48 +17,50 @@ import com.oxyl.validator.IndexValidator;
 @Scope("prototype")
 public class ComputerPageHandlerStrategyService implements GenericPageHandler<Computer>{
 		
-	private List<Optional<Computer>> computerPageList;
-	private int pageIndex;
-	private int numberComputer;
-	private int numberPage;
+	private List<Computer> computerPageList;
+	private Long pageIndex;
+	private Long numberComputer;
+	private Long numberPage;
 	private static final int NUMBER_BUTTON = 5;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerPageHandlerStrategyService.class);
-	private int localNumberComputer;
-	private int localNumberPage;
+	private Long localNumberComputer;
+	private Long localNumberPage;
 	private boolean pageChanged;
-	private int[] buttonArray = new int[]{1,2,3,4,5};
+	private Long[] buttonArray = new Long[]{1L,2L,3L,4L,5L};
 	private State state;
 	private String searchedEntry = "";
 	private ComputerDAO computers;
 	private IndexValidator indexValidateur;
-	private final int NUMBER_RESULT_BY_PAGE = 10;
+	private final Long NUMBER_RESULT_BY_PAGE = 10L;
 	
 	public ComputerPageHandlerStrategyService(ComputerDAO computerDao, IndexValidator indexValidateur ) {
 		this.computers = computerDao;	
 		this.indexValidateur = indexValidateur;
 		numberComputer = initNumberComputer();
 		numberPage = initNumberPage();
-		this.computerPageList = computers.getComputerRange(0, NUMBER_RESULT_BY_PAGE);
+		this.computerPageList = BddMapper.computerPersistDtoListToComputerModelList(
+				computers.getComputerRange(0L, NUMBER_RESULT_BY_PAGE));
 		this.state = State.NORMAL;
+		this.pageIndex = 0L;
 	}
 	
 	public void setPageChanged() {
 		this.pageChanged = true;
 	}
 	
-	private int initNumberComputer() {
+	private Long initNumberComputer() {
 		return computers.getComputerCount();
 	}
 	
-	private int initNumberPage() {
+	private Long initNumberPage() {
 		return (numberComputer/NUMBER_RESULT_BY_PAGE)+1;
 	}
 	
-	public int getNumberComputer() {	
+	public Long getNumberComputer() {	
 		return numberComputer;
 	}
 	
-	public int getLocalNumberComputer() {	
+	public Long getLocalNumberComputer() {	
 		switch(this.state) {
 			case SEARCH:
 				return localNumberComputer;
@@ -69,11 +71,11 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		}
 	}
 	
-	public int getNumberPage() {		
+	public Long getNumberPage() {		
 		return numberPage;
 	}
 	
-	public int getLocalNumberPage() {
+	public Long getLocalNumberPage() {
 		switch(this.state) {
 		case SEARCH:
 			return localNumberPage;
@@ -84,7 +86,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		}
 	}
 	
-	public int[] getButtonArray() {
+	public Long[] getButtonArray() {
 		return buttonArray;
 	}
 	
@@ -103,11 +105,11 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		this.pageChanged = true;
 	}
 	
-	public void setNumberComputer(int newNumberComputer) {
+	public void setNumberComputer(Long newNumberComputer) {
 		numberComputer = newNumberComputer;
 	}
 	
-	public void updateButtonArray(int lastPage) {
+	public void updateButtonArray(Long lastPage) {
 		if(testLeftBlock()) {
 			updateFromLeft();
 		} else if (testRightBlock()){
@@ -132,20 +134,20 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 	
 	private void updateFromRight() {
-		for(int i=NUMBER_BUTTON - 1; i>=0;i--) {
+		for(int i= NUMBER_BUTTON - 1; i>=0;i--) {
 			buttonArray[i] = pageIndex + i - (NUMBER_BUTTON-1) + 1;
 		}
 	}
 	
 	
-	public void setPageIndex(int index) {
+	public void setPageIndex(Long index) {
 		if(indexValidateur.indexValidator(index,numberPage)) {
 			this.pageIndex = index;
 			this.pageChanged = true;
 		}
 	}
 	
-	public void setLocalPageIndex(int index) {
+	public void setLocalPageIndex(Long index) {
 		if(indexValidateur.indexValidator(index,localNumberPage)) {
 			this.pageIndex = index;
 			this.pageChanged = true;
@@ -153,7 +155,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 
 
-	public int getPageIndex() {
+	public Long getPageIndex() {
 		return pageIndex;
 	}
 	
@@ -165,14 +167,16 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 		return searchedEntry;
 	}
 
-	public List<Optional<Computer>> getComputerPageList() {
+	public List<Computer> getComputerPageList() {
 		if (pageChanged) {
 			switch(this.state) {
 				case NORMAL:
-					this.computerPageList = computers.getComputerRange(pageIndex, NUMBER_RESULT_BY_PAGE);
+					this.computerPageList = BddMapper.computerPersistDtoListToComputerModelList(
+							computers.getComputerRange(pageIndex, NUMBER_RESULT_BY_PAGE));
 					break;
 				case SEARCH:
-					this.computerPageList = computers.getSearchedComputerRange(pageIndex, NUMBER_RESULT_BY_PAGE, searchedEntry);
+					this.computerPageList = BddMapper.computerPersistDtoListToComputerModelList(
+							computers.getSearchedComputerRange(pageIndex, NUMBER_RESULT_BY_PAGE, searchedEntry));
 					break;
 				case ORDERBY:
 					break;
@@ -184,26 +188,27 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 
 
-	public void setPageList(List<Optional<Computer>> computerPageList) {
+	public void setPageList(List<Computer> computerPageList) {
 		this.computerPageList = computerPageList;
 	}	
 	
 	public void handlePage(int result) {
 		switch (result) {
 			case 1:
-				updateInfo(result-1);
+				updateInfo(Integer.toUnsignedLong(result-1));
 				break;
 			case 2:
-				updateInfo(result+1);
+				updateInfo(Integer.toUnsignedLong(result+1));
 				break;
 		}		
 	}
 	
-	public void updateInfo(int entry) {
-		int ref = pageIndex;
+	public void updateInfo(Long entry) {
+		Long ref = pageIndex;
 		setPageIndex(entry);
 		if(ref != pageIndex) {
-			this.computerPageList = computers.getComputerRange(pageIndex, NUMBER_RESULT_BY_PAGE);
+			this.computerPageList = BddMapper.computerPersistDtoListToComputerModelList(
+					computers.getComputerRange(pageIndex, NUMBER_RESULT_BY_PAGE));
 			LOGGER.info("Computer page info updated");
 		}
 	}
@@ -225,7 +230,7 @@ public class ComputerPageHandlerStrategyService implements GenericPageHandler<Co
 	}
 
 	@Override
-	public List<Optional<Computer>> getPageList() {
+	public List<Computer> getPageList() {
 		return computerPageList;
 	}
 	

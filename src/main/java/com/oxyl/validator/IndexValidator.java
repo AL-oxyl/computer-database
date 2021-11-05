@@ -11,7 +11,7 @@ public class IndexValidator {
 	
 	public IndexValidator() {}
 	
-	public boolean indexValidator(int index, int numberPage) {
+	public boolean indexValidator(Long index, Long numberPage) {
 		if(index < 0) {
 			LOGGER.error("Index négatif interdit");
 		} else if (index >= numberPage) {

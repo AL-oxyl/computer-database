@@ -2,9 +2,9 @@ package com.oxyl.mapper;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,19 +23,15 @@ public class ComputerMapper {
 		LOGGER.info("Computer mapper instantiate");
 	}
 
-	public static ComputerDTO computerModelToComputerDTO(Computer model) {
-		return new ComputerDTO(model);
+	public static ComputerDTO computerModelToComputerDTO(Computer computer) {
+		return new ComputerDTO(computer);
 	}
 
-	public static List<ComputerDTO> computerListToDTOList(List<Optional<Computer>> computerList) {
-		ArrayList<ComputerDTO> dtoList = new ArrayList<ComputerDTO>();
-		for (Optional<Computer> computer : computerList) {
-			dtoList.add(optionalComputerModelToComputerDTO(computer));
-		}
-		return dtoList;
+	public static List<ComputerDTO> computerListToDTOList(List<Computer> computerList) {
+		return computerList.stream().map(ComputerMapper::computerModelToComputerDTO).collect(Collectors.toList());
 	}
 	
-	private static ComputerDTO optionalComputerModelToComputerDTO(Optional<Computer> computer) {
+	private static ComputerDTO ComputerModelToComputerDTO(Optional<Computer> computer) {
 		ComputerDTO dto = new ComputerDTO();
 		if (computer.isPresent()) {
 			return computerModelToComputerDTO(computer.get());
@@ -45,32 +41,28 @@ public class ComputerMapper {
 
 	public static Computer computerDTOToComputerModel(ComputerDTO dtoComputer, List<Company> companies)  {
 		
-		String name = "";
-		String companyId = "";
-		Optional<LocalDate> localIntro = Optional.empty();
-		Optional<LocalDate> localDis = Optional.empty();
-		Optional <Integer> compId = Optional.empty();
-		name = dtoComputer.getComputerName();
-		if(!dtoComputer.getIntroductionDate().isEmpty()) {
-			localIntro = Optional.of(LocalDate.parse(dtoComputer.getIntroductionDate(),dtf));
+		String name = dtoComputer.getComputerName();
+		String companyId = dtoComputer.getCompanyId();
+		LocalDate localIntro = null;
+		LocalDate localDis = null;
+
+		if(dtoComputer.getIntroductionDate() != null) {
+			localIntro = LocalDate.parse(dtoComputer.getIntroductionDate(),dtf);
 		}
-		if(!dtoComputer.getDiscontinuedDate().isEmpty()) {
-			localDis = Optional.of(LocalDate.parse(dtoComputer.getDiscontinuedDate(),dtf));
-		}
-		if(dtoComputer.getCompanyId().isPresent()) {
-			companyId = dtoComputer.getCompanyId().get();
+		if(dtoComputer.getDiscontinuedDate() != null) {
+			localDis = LocalDate.parse(dtoComputer.getDiscontinuedDate(),dtf);
 		}
 		if(!"-1".equals(dtoComputer.getComputerId())) {
-			compId = Optional.of(Integer.parseInt(dtoComputer.getComputerId()));
+			Integer compId = Integer.parseInt(dtoComputer.getComputerId());
 			return new Computer.ComputerBuilder(name)
-					           .id(compId.get())
-					           .manufacturer(Optional.ofNullable(companyIdToCompanyModel(companyId, companies)))
+					           .id(compId)
+					           .manufacturer(companyIdToCompanyModel(companyId, companies))
 					           .introductionDate(localIntro)
 					           .discontinuedDate(localDis)
 					           .build(); 
 		}
 		return new Computer.ComputerBuilder(name)
-				    .manufacturer(Optional.ofNullable(companyIdToCompanyModel(companyId, companies)))
+				    .manufacturer(companyIdToCompanyModel(companyId, companies))
 				    .introductionDate(localIntro)
 				    .discontinuedDate(localDis)
 				    .build();     

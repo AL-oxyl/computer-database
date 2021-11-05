@@ -2,21 +2,22 @@ package com.oxyl.dao;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import javax.sql.DataSource;
+import javax.persistence.EntityManager;
 
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oxyl.dao.bddmapper.CompanyRowMapper;
-import com.oxyl.model.Company;
+import com.oxyl.dto.CompanyPersistDto;
+import com.oxyl.dto.QCompanyPersistDto;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
 
 
 @Repository
@@ -24,74 +25,54 @@ public class CompanyDAO {
 	/**
 	 * This is the class that contains all companies. It follows Singleton pattern.
 	 */
-	private DataSource dsConnection;
 	public static final short NUMBER_RESULT_BY_PAGE = 10;
-	private static final String QUERY_ALL = "select id,name from company order by id";
-	private static final String QUERY_GET_BY_ID = "select id,name from company where id= :id";
-	private static final String QUERY_GET_BY_NAME = "select id,name from company where name= :name";
-	private static final String QUERY_GET_RANGE = "select id,name from company order by id limit :size offset :number";
-	private static final String QUERY_DELETE_COMPUTER_BY_COMPANY_ID = "delete from computer where company_id = :id";
-	private static final String QUERY_DELETE_BY_ID = "delete from company where id = :id";
-	private static final String QUERY_COUNT = "select count(company.id) from company";
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompanyDAO.class);
 	
+	private EntityManager entityManager;
+	
+	
 	@Autowired
-	public CompanyDAO(DataSource dataSource) {
+	public CompanyDAO(SessionFactory sessionFactory) {
 		LOGGER.info("instantiation company DAO");
-		this.dsConnection = dataSource;
+		this.entityManager = sessionFactory.createEntityManager();
 	}
 	
-	public List<Optional<Company>> getAllCompanies() {
-		MapSqlParameterSource parameters = new MapSqlParameterSource();
-		return getQueryHolder(QUERY_ALL, parameters);
+	public List<CompanyPersistDto> getAllCompanies() {
+		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		return queryFactory.selectFrom(QCompanyPersistDto.companyPersistDto).fetch();
 	}
 	
-	public Optional<Company> getCompany(int id) {
-		MapSqlParameterSource parameters = new MapSqlParameterSource();
-		parameters.addValue("id", id);
-		return getQueryHolder(QUERY_GET_BY_ID, parameters).get(0);
+	public Optional<CompanyPersistDto> findById(Integer id) {
+		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		QCompanyPersistDto company = QCompanyPersistDto.companyPersistDto;
+		return Optional.ofNullable(queryFactory.selectFrom(company).where(company.id.eq(id)).fetchOne());
 	}
 	
-	public List<Optional<Company>> getCompany(String name) {
-		MapSqlParameterSource parameters = new MapSqlParameterSource();
-		parameters.addValue("name", name);
-		return getQueryHolder(QUERY_GET_BY_NAME, parameters);
+	public List<CompanyPersistDto> findByName(String name) {
+		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		QCompanyPersistDto company = QCompanyPersistDto.companyPersistDto;
+		return queryFactory.selectFrom(company).where(company.name.eq(name)).fetch();
 	}
 	
-	public List<Optional<Company>> getCompanyRange(int pageNumber, int numberResultByPage) {
-		MapSqlParameterSource parameters = new MapSqlParameterSource();
-		parameters.addValue("size", numberResultByPage);
-		parameters.addValue("number", pageNumber);
-		return getQueryHolder(QUERY_GET_RANGE, parameters);
+	public List<CompanyPersistDto> getCompanyRange(Long pageNumber, Long numberResultByPage) {
+		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		QCompanyPersistDto company = QCompanyPersistDto.companyPersistDto;
+		return queryFactory.selectFrom(company).offset(pageNumber).limit(numberResultByPage).fetch();
 	}
 	
-	private List<Optional<Company>> getQueryHolder(String queryName, MapSqlParameterSource parameters) {
-	//	List<Company> companyList;
-	/**	if(parameters.getValues().isEmpty()) {
-			JdbcTemplate jdbcTemplate = new JdbcTemplate(dsConnection);
-			companyList = jdbcTemplate.query(queryName, new CompanyRowMapper());
-		} else {**/
-		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dsConnection);
-		List<Company> companyList = jdbcTemplate.query(queryName, parameters, new CompanyRowMapper());
-//		}
-		return companyList.stream().map(Optional::ofNullable).collect(Collectors.toList());
+	public Long getCompanyCount() {
+		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		QCompanyPersistDto company = QCompanyPersistDto.companyPersistDto;
+		return queryFactory.select(company.id.count()).from(company).fetchOne();	
 	}
 	
 	@Transactional
 	public void deleteCompanyById(int id) {
-		MapSqlParameterSource parameters = new MapSqlParameterSource();
-		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dsConnection);
-		parameters.addValue("id", id);
-		jdbcTemplate.update(QUERY_DELETE_COMPUTER_BY_COMPANY_ID, parameters);
-		jdbcTemplate.update(QUERY_DELETE_BY_ID, parameters);
-	}
-	
-	public int getCompanyCount() {
-		MapSqlParameterSource parameters = new MapSqlParameterSource();
-		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dsConnection);
-		return jdbcTemplate.queryForObject(QUERY_COUNT, parameters,Integer.class);
-	}
-	
-	
+		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		QCompanyPersistDto company = QCompanyPersistDto.companyPersistDto;
+		entityManager.getTransaction().begin();
+		queryFactory.delete(company).where(company.id.eq(Integer.valueOf(id))).execute();
+		entityManager.getTransaction().commit();
 
+	}
 }
