@@ -1,4 +1,4 @@
-package com.oxyl.mapper;
+package com.oxyl.mapper.frontmapper;
 
 import java.util.List;
 import java.util.Optional;

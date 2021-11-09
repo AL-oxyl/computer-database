@@ -1,4 +1,4 @@
-package com.oxyl.execution;
+package com.oxyl.config;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 

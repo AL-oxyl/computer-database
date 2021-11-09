@@ -1,4 +1,4 @@
-package com.oxyl.execution;
+package com.oxyl.config;
 
 import java.util.Locale;
 import java.util.Properties;
@@ -16,6 +16,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -28,12 +29,16 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan({"com.oxyl.validator",
+@EnableWebMvc
+@ComponentScan(basePackages = {
+		        "com.oxyl.config",
+		        "com.oxyl.service",
+	            "com.oxyl.validator",
 	            "com.oxyl.dao",
 	            "com.oxyl.controller",
-	            "com.oxyl.dao.bddmapper",
 	            "com.oxyl.mapper",
-	            "com.oxyl.service"})
+	            "com.oxyl.dto"
+	            })
 public class WebConfig extends DelegatingWebMvcConfiguration {
 	
 	@Bean

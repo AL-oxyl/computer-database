@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.oxyl.dao.ComputerDAO;
-import com.oxyl.mapper.BddMapper;
+import com.oxyl.mapper.frontmapper.BddMapper;
 import com.oxyl.model.Computer;
 
 @Service

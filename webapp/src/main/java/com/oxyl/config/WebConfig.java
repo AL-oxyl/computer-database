@@ -1,4 +1,4 @@
-package com.oxyl.execution;
+package com.oxyl.config;
 
 import java.util.Locale;
 import java.util.Properties;
@@ -15,9 +15,12 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -28,13 +31,16 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan({"com.oxyl.validator",
+@EnableWebMvc
+@ComponentScan(basePackages = {
+		        "com.oxyl.service",
+	            "com.oxyl.validator",
 	            "com.oxyl.dao",
 	            "com.oxyl.controller",
-	            "com.oxyl.dao.bddmapper",
 	            "com.oxyl.mapper",
-	            "com.oxyl.service"})
-public class WebConfig extends DelegatingWebMvcConfiguration {
+	            "com.oxyl.dto"
+	            })
+public class WebConfig implements WebMvcConfigurer {
 	
 	@Bean
 	public InternalResourceViewResolver viewResolver() {
@@ -45,12 +51,18 @@ public class WebConfig extends DelegatingWebMvcConfiguration {
 	}
 	
 	@Override
-	protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+	     configurer.enable();
+	}
+	  
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/webapp/css/**", "/webapp/js/**")
+		        .addResourceLocations("classpath:webapp/css/", "classpath:webapp/js/");
 	}
 	
 	@Override
-	protected void addInterceptors(InterceptorRegistry registry) {
+	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(localeChangeInterceptor());
 	}
 	

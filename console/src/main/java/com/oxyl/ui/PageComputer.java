@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.oxyl.dto.ComputerDTO;
-import com.oxyl.mapper.ComputerMapper;
+import com.oxyl.mapper.frontmapper.ComputerMapper;
 import com.oxyl.model.Computer;
 
 import com.oxyl.service.Pagination;

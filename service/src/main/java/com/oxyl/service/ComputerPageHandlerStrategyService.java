@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.oxyl.dao.ComputerDAO;
-import com.oxyl.mapper.BddMapper;
+import com.oxyl.mapper.frontmapper.BddMapper;
 import com.oxyl.model.Computer;
 import com.oxyl.validator.IndexValidator;
 

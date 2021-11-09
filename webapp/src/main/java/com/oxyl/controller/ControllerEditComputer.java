@@ -20,7 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.oxyl.dto.ComputerDTO;
 import com.oxyl.exceptions.NotANumberException;
-import com.oxyl.mapper.ComputerMapper;
+import com.oxyl.mapper.frontmapper.ComputerMapper;
 import com.oxyl.model.Company;
 import com.oxyl.model.Computer;
 import com.oxyl.service.CompanyService;

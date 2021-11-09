@@ -1,9 +1,9 @@
-package com.oxyl.mapper;
+package com.oxyl.mapper.frontmapper;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
+//import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -31,13 +31,13 @@ public class ComputerMapper {
 		return computerList.stream().map(ComputerMapper::computerModelToComputerDTO).collect(Collectors.toList());
 	}
 	
-	private static ComputerDTO ComputerModelToComputerDTO(Optional<Computer> computer) {
+/**	private static ComputerDTO ComputerModelToComputerDTO(Optional<Computer> computer) {
 		ComputerDTO dto = new ComputerDTO();
 		if (computer.isPresent()) {
 			return computerModelToComputerDTO(computer.get());
 		}
 		return dto;
-	}
+	}*/
 
 	public static Computer computerDTOToComputerModel(ComputerDTO dtoComputer, List<Company> companies)  {
 		

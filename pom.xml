@@ -4,7 +4,7 @@
   <groupId>com.oxyl</groupId>
   <artifactId>cdb</artifactId>
   <packaging>pom</packaging>
-  <version>cdb-0.0.1-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
   
 
   <name>cdb</name>
@@ -30,11 +30,7 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.16</version>
-    </dependency>
+    
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -51,12 +47,7 @@
       <version>1.9.5</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>1.4.200</version>
-      <scope>test</scope>
-    </dependency>
+    
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-dbcp2</artifactId>
@@ -154,139 +145,25 @@
       
       
       <artifactId>jsp-api</artifactId>
-                                      		
-      
-      
-      
-      
-      
+
       <version>2.1</version>
-                                      		
-      
-      
-      
-      
-      
+
       <scope>provided</scope>
-                                    	
-    
-    
-    
-    
-    
+
     </dependency>
                         	
-	
-    
-    
-    
-    
-    
+
     <dependency>
-                                    	    
-      
-      
-      
-      
-      
       <groupId>jstl</groupId>
-                                    	    
-      
-      
-      
-      
-      
       <artifactId>jstl</artifactId>
-                                    	    
-      
-      
-      
-      
-      
-      <version>1.2</version>
-                                    	
-    
-    
-    
-    
-    
+      <version>1.2</version> 
     </dependency>
-                        	
-    
-    
-    
-    
-    
+   
     <dependency>
-                                        	    
-      
-      
-      
-      
-      
-      <groupId>com.zaxxer</groupId>
-                                        	    
-      
-      
-      
-      
-      
-      <artifactId>HikariCP</artifactId>
-                                        	    
-      
-      
-      
-      
-      
-      <version>3.4.5</version>
-                                    	
-    
-    
-    
-    
-    
-    </dependency>
-                        	
-    
-    
-    
-    
-    
-    <dependency>
-                                       		
-      
-      
-      
-      
-      
       <groupId>org.springframework</groupId>
-                                        	
-      
-      
-      
-      
-      
       <artifactId>spring-context</artifactId>
-                                        	
-      
-      
-      
-      
-      
       <version>5.3.11</version>
-                                    	
-    
-    
-    
-    
-    
     </dependency>
-                        	
-    
-    
-    
-    
-    
     <dependency>
                                         	
       
@@ -351,229 +228,37 @@
     
     
     </dependency>
-                        	
-    
-    
-    
-    
-    
     <dependency>
-                                        	
-      
-      
-      
-      
-      
       <groupId>org.springframework</groupId>
-                                        	
-      
-      
-      
-      
-      
       <artifactId>spring-jdbc</artifactId>
-                                        	
-      
-      
-      
-      
-      
       <version>5.3.11</version>
-                                    	
-    
-    
-    
-    
-    
     </dependency>
-                        	
-    
-    
-    
-    
-    
     <dependency>
-                                            
-      
-      
-      
-      
-      
       <groupId>org.springframework</groupId>
-                                            
-      
-      
-      
-      
-      
       <artifactId>spring-orm</artifactId>
-                                            
-      
-      
-      
-      
-      
       <version>5.3.11</version>
-                                        
-    
-    
-    
-    
-    
     </dependency>
-                            
-    
-    
-    
-    
-    
     <dependency>
-                                            
-      
-      
-      
-      
-      
       <groupId>org.hibernate</groupId>
-                                            
-      
-      
-      
-      
-      
       <artifactId>hibernate-core</artifactId>
-                                            
-      
-      
-      
-      
-      
       <version>5.6.1.Final</version>
-                                    	
-    
-    
-    
-    
-    
     </dependency>
-                        	
-    
-    
-    
-    
-    
     <dependency>
-                                    	    
-      
-      
-      
-      
-      
       <groupId>com.querydsl</groupId>
-                                    	    
-      
-      
-      
-      
-      
       <artifactId>querydsl-apt</artifactId>
-                                    	    
-      
-      
-      
-      
-      
       <version>5.0.0</version>
-                                    	    
-      
-      
-      
-      
-      
       <scope>provided</scope>
-                                    	
-    
-    
-    
-    
-    
     </dependency>
-                        	
-    
-    
-    
-    
-    
     <dependency>
-                                    	    
-      
-      
-      
-      
-      
       <groupId>com.querydsl</groupId>
-                                    	    
-      
-      
-      
-      
-      
       <artifactId>querydsl-jpa</artifactId>
-                                    	    
-      
-      
-      
-      
-      
       <version>5.0.0</version>
-                                    	
-    
-    
-    
-    
-    
     </dependency>
-                        	
-    
-    
-    
-    
-    
-    <dependency>
-                                       	    
-      
-      
-      
-      
-      
-      <groupId>org.mybatis</groupId>
-                                            
-      
-      
-      
-      
-      
-      <artifactId>mybatis</artifactId>
-                                    	    
-      
-      
-      
-      
-      
+    <dependency> 
+      <groupId>org.mybatis</groupId>    
+      <artifactId>mybatis</artifactId>     
       <version>3.4.5</version>
-                                    	
-    
-    
-    
-    
-    
     </dependency>
-                         
-  
-  
-  
-  
-  
   </dependencies>
              
  

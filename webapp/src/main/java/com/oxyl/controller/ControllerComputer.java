@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.oxyl.dto.ComputerDTO;
-import com.oxyl.mapper.ComputerMapper;
+import com.oxyl.mapper.frontmapper.ComputerMapper;
 import com.oxyl.service.ComputerPageHandlerStrategyService;
 import com.oxyl.service.ComputerService;
 import com.oxyl.service.State;

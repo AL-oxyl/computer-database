@@ -1,4 +1,4 @@
-package com.oxyl.dao.bddmapper;
+package com.oxyl.mapper.bddmapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
