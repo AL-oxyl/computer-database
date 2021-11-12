@@ -8,10 +8,13 @@ import org.springframework.stereotype.Component;
 
 import com.oxyl.dto.ComputerPersistDto;
 import com.oxyl.dto.ComputerPersistDto.ComputerPersistDtoBuilder;
+import com.oxyl.dto.UserPersistDto;
 import com.oxyl.model.Company;
 import com.oxyl.dto.CompanyPersistDto;
 import com.oxyl.model.Computer;
 import com.oxyl.model.Computer.ComputerBuilder;
+import com.oxyl.model.User;
+import com.oxyl.model.User.UserBuilder;
 
 @Component
 public class BddMapper {
@@ -80,7 +83,18 @@ public class BddMapper {
 			computerBuilder.manufacturer(company);
 		}
 		return computerBuilder.build();
+	}
 	
-	
+	public static Optional<User> userPersistDtoToUserModel(Optional<UserPersistDto> userDto) {
+		if(userDto.isPresent()) {
+			UserBuilder userBuilder = new User.UserBuilder();
+			userBuilder.id(userDto.get().getId())
+		               .username(userDto.get().getUsername())
+			           .password(userDto.get().getPassword())
+			           .role(userDto.get().getRole())
+			           .enabled(userDto.get().isEnabled());
+			return Optional.of(userBuilder.build());
+		}
+		return Optional.empty();
 	}
 }

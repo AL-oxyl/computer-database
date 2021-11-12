@@ -12,6 +12,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.LocaleResolver;
@@ -108,5 +111,9 @@ public class WebConfig extends DelegatingWebMvcConfiguration {
 	public DataSource dataSource() {
 		return new HikariDataSource(new HikariConfig("/datasource.properties"));
 	}
-	
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+    	return new BCryptPasswordEncoder();
+    }
 }
