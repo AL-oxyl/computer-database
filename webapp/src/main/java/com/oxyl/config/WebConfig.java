@@ -21,12 +21,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -34,9 +34,9 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import com.oxyl.controller.ControllerAddComputer;
 import com.oxyl.filter.JwtRequestFilter;
 import com.oxyl.service.CustomUserDetailsService;
 import com.zaxxer.hikari.HikariConfig;
@@ -52,6 +52,7 @@ import com.zaxxer.hikari.HikariDataSource;
 	            "com.oxyl.validator",
 	            "com.oxyl.dao",
 	            "com.oxyl.controller",
+	            "com.oxyl.filter",
 	            "com.oxyl.mapper",
 	            "com.oxyl.dto"
 	            })
@@ -65,6 +66,12 @@ public class WebConfig extends WebSecurityConfigurerAdapter implements WebMvcCon
 		resourceViewResolver.setPrefix("/WEB-INF/views/");
 		resourceViewResolver.setSuffix(".jsp");
 		return resourceViewResolver;
+	}
+	
+	@Bean
+	public ViewResolver beanNameViewResolver() {
+		BeanNameViewResolver resolver = new BeanNameViewResolver();
+	    return resolver;
 	}
 	
 	@Override
@@ -159,13 +166,14 @@ public class WebConfig extends WebSecurityConfigurerAdapter implements WebMvcCon
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     	http.csrf().disable().authorizeRequests().mvcMatchers("/webapp/dashboard/**", "/webapp/delete/**", "/webapp/edit/**", "/webapp/add/**")
-    	           .hasRole("ADMIN").mvcMatchers("/computer/list").authenticated()
+    	           .hasRole("ADMIN").mvcMatchers("/webapp/list").authenticated()
     	           .anyRequest().permitAll().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    /**	try { 
+    	try { 
+    		LOGGER.info(new JwtRequestFilter().toString());
     		http.addFilterBefore(new JwtRequestFilter(), JwtRequestFilter.class);
     	} catch (NullPointerException exception){
     		exception.printStackTrace();
-    	}*/
+    	}
     }
     
     @Bean

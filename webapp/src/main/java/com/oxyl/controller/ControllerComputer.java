@@ -3,19 +3,24 @@ package com.oxyl.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 
 import com.oxyl.dto.ComputerDTO;
+import com.oxyl.dto.PageDTO;
 import com.oxyl.mapper.frontmapper.ComputerMapper;
 import com.oxyl.service.ComputerPageHandlerStrategyService;
 import com.oxyl.service.ComputerService;
 import com.oxyl.service.State;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,9 +34,7 @@ public class ControllerComputer {
 	private ComputerService computerService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ControllerComputer.class);
-	private final String ERROR404 = "404";
 	private final String SELECTION = "selection";
-	private final String DASHBOARD = "dashboard";
 	private final String SEARCH = "search";
 	private final String PAGE = "page";
 	private final String ORDER = "order";
@@ -45,35 +48,34 @@ public class ControllerComputer {
 	}
 	
 
-	@RequestMapping(method = RequestMethod.POST)
-	protected ModelAndView doPost(@RequestParam(value = SELECTION, required = true) String selection) throws ServletException, IOException {
+	@RequestMapping(params = {"SELECTION"}, method = RequestMethod.DELETE)
+	@ResponseBody
+	public ResponseEntity<?> doPost(@RequestParam(value = SELECTION, required = true) String selection) throws ServletException, IOException {
 		boolean isValid = true;
 		if (selection.length() > 0) {
 			isValid = deleteSelection(selection);
 			if (!isValid) {
-				return new ModelAndView(ERROR404);
+				return ResponseEntity.ok(HttpStatus.BAD_REQUEST);
 			}
 		}
-		ModelAndView dashboardView = new ModelAndView(DASHBOARD);
 		Long numberPage = computerPaginationService.getPageIndex();
 		updateOnId(numberPage);
-		dashboardView = handleRequest(dashboardView);
+	//	dashboardView = handleRequest();
 		computerPaginationService.setPageChanged();		
 		LOGGER.info("requete envoyee post dashboard");
-		return dashboardView;
+		return ResponseEntity.ok(HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView doGet(@RequestParam(value = SEARCH, required = false) String search,
+	@RequestMapping(params = {"SEARCH", "PAGE", "ORDER"}, method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+	public ResponseEntity<PageDTO> doGet(@RequestParam(value = SEARCH, required = false) String search,
                                  @RequestParam(value = PAGE, required = false) String page,
                                  @RequestParam(value = ORDER, required = false) String order) throws ServletException, IOException {
 		if (page != null) {
 			boolean isValid = updatePage(page);
 			if (!isValid) {
-				return new ModelAndView(ERROR404);
+				return ResponseEntity.ok(new PageDTO(new ArrayList<ComputerDTO>()));
 			}
 		}
-		ModelAndView dashboardView = new ModelAndView(DASHBOARD);
 		if (search != null) {
 			this.computerPaginationService.setSearchedEntry(search);
 			this.computerPaginationService.changeState(State.SEARCH);
@@ -86,7 +88,7 @@ public class ControllerComputer {
 			this.computerPaginationService.changeState(State.NORMAL);
 		}
 		LOGGER.info("requete envoyee get dashboard");
-		return handleRequest(dashboardView);
+		return ResponseEntity.ok(handleRequest());
 	}
 
 	private boolean updatePage(String page) {
@@ -121,15 +123,13 @@ public class ControllerComputer {
 		return false;
 	}
 
-	private ModelAndView handleRequest(ModelAndView view) throws ServletException, IOException {
+	private PageDTO handleRequest() {
 		List<ComputerDTO> computerList = ComputerMapper.computerListToDTOList(computerPaginationService.getComputerPageList());
-		view.addObject("pages", computerPaginationService.getButtonArray());
-		view.addObject("testLeft", !computerPaginationService.testLeft());
-		view.addObject("testRight", !computerPaginationService.testRight());
-		view.addObject("numberComputer", computerPaginationService.getLocalNumberComputer());
-		view.addObject("numberPage", computerPaginationService.getLocalNumberPage());
-		view.addObject("computerList", computerList);
-		view.addObject("testNumber", computerPaginationService.getLocalNumberComputer() > 1);
-		return view;
+		Boolean isLeft = computerPaginationService.testLeft();
+		Boolean isRight = computerPaginationService.testRight();
+		Long numberComputer = computerPaginationService.getLocalNumberComputer();
+		Long numberPage = computerPaginationService.getLocalNumberPage();
+		Boolean isUnique = computerPaginationService.getLocalNumberComputer() < 2;
+		return new PageDTO(computerList, isLeft, isRight, numberComputer, numberPage, isUnique);
 	}
 }
